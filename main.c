@@ -78,7 +78,6 @@ void main() {
     temperatureDegC = (float)((long)in_temp - CALADC12_15V_30C) * degC_per_bit +30.0;
     // Temperature in Fahrenheit Tf = (9/5)*Tc + 32
     temperatureDegF = temperatureDegC * 9.0/5.0 + 32.0;
-    __no_operation();
   /*----------------------------------------------------------------------------------- */
   //You can wrap this in a function but I'm pretty sure it needs to return a pointer to an array to work properly, so you'd need to initialize the array and allocate memory first
     //Stores month abbreviations  as an array of char in an array
@@ -109,6 +108,7 @@ void main() {
         disp_date[4] = day_tens;
         disp_date[5] = day_ones;
         disp_date[6] = '\0';
+
         // Same as above, it needs to have a target to return the array to to be wrapped as a function
         unsigned int hours = (global_counter / 3600) % 24;
         unsigned int minutes = (global_counter / 60) % 60;
@@ -129,8 +129,36 @@ void main() {
         disp_time[6] = seconds_tens;
         disp_time[7] = seconds_ones;
         disp_time[8] = '\0';
+
+        //Yeah I'm not allocating memory by hand
+        temperatureDegC = temperatureDegC * 10;
+        unsigned int int_degC = (unsigned int)temperatureDegC;
+        char c_tens = ((int_degC / 100) % 10) + '0';
+        char c_ones = ((int_degC / 10) % 10) + '0';
+        char c_tenths = (int_degC % 10) + '0';
+        temperatureDegF = temperatureDegF * 10;
+        unsigned char disp_c[6];
+        disp_c[0] = c_tens;
+        disp_c[1] = c_ones;
+        disp_c[2] = '.';
+        disp_c[3] = c_tenths;
+        disp_c[4] = ' ';
+        disp_c[5] = 'C';
+        unsigned int int_degF = (unsigned int)temperatureDegF;
+        char f_tens = ((int_degF / 100) % 10) + '0';
+        char f_ones = ((int_degF / 10) % 10) + '0';
+        char f_tenths = (int_degF % 10) + '0';
+        unsigned char disp_f[6];
+        disp_f[0] = f_tens;
+        disp_f[1] = f_ones;
+        disp_f[2] = '.';
+        disp_f[3] = f_tenths;
+        disp_f[4] = ' ';
+        disp_f[5] = 'F';
         // Write to the display
         Graphics_drawStringCentered(&g_sContext, disp_date, 7, 48, 15, TRANSPARENT_TEXT);
         Graphics_drawStringCentered(&g_sContext, disp_time, 9, 48, 35, TRANSPARENT_TEXT);
+        Graphics_drawStringCentered(&g_sContext, disp_c, 6, 48, 45, TRANSPARENT_TEXT);
+        Graphics_drawStringCentered(&g_sContext, disp_f, 6, 48, 55, TRANSPARENT_TEXT);
   }
 }
