@@ -1,23 +1,6 @@
 #include "functions.h"
 // User written functions
 
-// Set LED function for note display
-void set_leds(int pitch)
-{
-  unsigned char output_mask = 0;
-  // Zero output register
-  P6OUT &= ~(BIT4|BIT3|BIT2|BIT1);
-  if (pitch <= 73 && pitch >= 65)
-    output_mask = output_mask | BIT2;
-  if (pitch < 65 && pitch >= 55)
-    output_mask = output_mask | BIT1;
-  if (pitch < 55 && pitch >= 46)
-    output_mask = output_mask | BIT3;
-  if (pitch < 46 && pitch >= 36)
-    output_mask = output_mask | BIT4;
-  P6OUT = P6OUT | output_mask;
-}
-
 // Initializes the two user LEDs
 void init_user_leds()
 {
@@ -77,45 +60,6 @@ unsigned int read_buttons() {
   return pressed;
 }
 
-//Turn on the buzzer
-void buzzer_on(int ticks)
-{
-/* PWM period in ticks for each note
-A = 73
-Bb = 69
-B = 65
-C = 62
-C# = 58
-D = 55
-Eb = 52
-E = 49
-F = 46
-F# = 43
-G = 41
-Ab = 38
-A octave = 36
-*/
-
-  // Initialize PWM output on P3.5, which corresponds to TB0.5
-  P3SEL |= BIT5; // Select peripheral output mode for P3.5
-  P3DIR |= BIT5;
-
-  TB0CTL  = (TBSSEL__ACLK|ID__1|MC__UP);  // Configure Timer B0 to use ACLK, divide by 1, up mode
-  TB0CTL  &= ~TBIE;                       // Explicitly Disable timer interrupts for safety
-
-  // Now configure the timer period, which controls the PWM period
-  // Doing this with a hard coded values is NOT the best method
-  // We do it here only as an example. You will fix this in Lab 2.
-  //
-  TB0CCR0 = ticks;                    // Set the PWM period in ACLK ticks
-  TB0CCTL0 &= ~CCIE;                  // Disable timer interrupts
-
-  // Configure CC register 5, which is connected to our PWM pin TB0.5
-  TB0CCTL5  = OUTMOD_7;                   // Set/reset mode for PWM
-  TB0CCTL5 &= ~CCIE;                      // Disable capture/compare interrupts
-  TB0CCR5   = TB0CCR0/2;                  // Configure a 50% duty cycle
-}
-
 //Global timer A2 for clock, frequency is 32768 with an /8 division interrupt timing is 1 second.
 void runtimerA2(void)
 {
@@ -124,34 +68,88 @@ void runtimerA2(void)
   TA2CCTL0 = CCIE;
 }
 
-/*
-Description: 
-1. Map the pitch of the previous note the supposedly correct Board buttons (1-4)
-2. Display whether the user got it right or not through the 2 user's LED
-3. Update score
-Return: return either 1 (note hit) and 0 (otherwise)
-*/
-int check_input(int pitch, unsigned int user_input) {
-  int hit = 0;
-
-  //Find the supposedly correct user input
-  unsigned int true_button = 0;
-  if (pitch <= 73 && pitch >= 65)
-    true_button = 1;
-  if (pitch < 65 && pitch >= 55)
-    true_button = 2;
-  if (pitch < 55 && pitch >= 46)
-    true_button = 4;
-  if (pitch < 46 && pitch >= 36)
-    true_button = 8;
-
-  //Display user input --> Flash User's LED & Update score
-  if (user_input == true_button) {
-    set_user_leds(1); //0x01 --> Right user's LED
-    hit = 1;
-  } else {
-    set_user_leds(2); //0x10 --> Left user's LED
+void displayDate(char* date, volatile long unsigned int globalTime) {
+  const char* month_abbr[] = {
+    "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
+  //Stores length of month to be used to decrement days later
+  const int month_days[] = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
+  unsigned int month = 0;
+  unsigned int day = global_counter / 86400;
+  for (int i = 0; i < 12; i++) {
+    if (day <= month_days[i]) {
+      month = i;
+      break;
+    }
+    day = day - month_days[i];
   }
+  char day_tens = ((day - (day % 10)) / 10) + '0';
+  char day_ones = (day % 10) + '0';
 
-  return hit;
+  date[0] = month_abbr[month][0];
+  date[1] = month_abbr[month][1];
+  date[2] = month_abbr[month][2];
+  date[3] = ' ';
+  date[4] = day_tens;
+  date[5] = day_ones;
+  date[6] = '\0';
+
+  Graphics_drawStringCentered(&g_sContext, date, 7, 48, 15, TRANSPARENT_TEXT);
+}
+
+void displayTime(char* disp_time, volatile long unsigned int globalTime) {
+  unsigned int hours = (global_counter / 3600) % 24;
+  unsigned int minutes = (global_counter / 60) % 60;
+  unsigned int seconds = global_counter % 60;
+  char hours_tens = ((hours - (hours % 10)) / 10) + '0';
+  char hours_ones = (hours % 10) + '0';
+  char minutes_tens = ((minutes - (minutes % 10)) / 10) + '0';
+  char minutes_ones = (minutes % 10) + '0';
+  char seconds_tens = ((seconds - (seconds % 10)) / 10) + '0';
+  char seconds_ones = (seconds % 10) + '0';
+
+  disp_time[0] = hours_tens;
+  disp_time[1] = hours_ones;
+  disp_time[2] = ':';
+  disp_time[3] = minutes_tens;
+  disp_time[4] = minutes_ones;
+  disp_time[5] = ':';
+  disp_time[6] = seconds_tens;
+  disp_time[7] = seconds_ones;
+  disp_time[8] = '\0';
+
+  Graphics_drawStringCentered(&g_sContext, disp_time, 9, 48, 35, TRANSPARENT_TEXT);
+}
+
+void displayTempC(char* disp_c, float temperatureDegC) {
+  temperatureDegC = temperatureDegC * 10;
+  unsigned int int_degC = (unsigned int)temperatureDegC;
+  char c_tens = ((int_degC / 100) % 10) + '0';
+  char c_ones = ((int_degC / 10) % 10) + '0';
+  char c_tenths = (int_degC % 10) + '0';
+
+  disp_c[0] = c_tens;
+  disp_c[1] = c_ones;
+  disp_c[2] = '.';
+  disp_c[3] = c_tenths;
+  disp_c[4] = ' ';
+  disp_c[5] = 'C';
+
+  Graphics_drawStringCentered(&g_sContext, disp_c, 6, 48, 45, TRANSPARENT_TEXT);
+}
+
+void displayTempF(char* tempF, float temperatureDegF) {
+  temperatureDegF = temperatureDegF * 10;
+  unsigned int int_degF = (unsigned int)temperatureDegF;
+  char f_tens = ((int_degF / 100) % 10) + '0';
+  char f_ones = ((int_degF / 10) % 10) + '0';
+  char f_tenths = (int_degF % 10) + '0';
+  
+  tempF[0] = f_tens;
+  tempF[1] = f_ones;
+  tempF[2] = '.';
+  tempF[3] = f_tenths;
+  tempF[4] = ' ';
+  tempF[5] = 'F';
+
+  Graphics_drawStringCentered(&g_sContext, tempF, 6, 48, 55, TRANSPARENT_TEXT);
 }
