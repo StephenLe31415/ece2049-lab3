@@ -48,8 +48,8 @@ void main() {
   ADC12CTL1 = ADC12SHP + ADC12CONSEQ_1; // Enable sample timer and set sequential mode
   // Using ADC12MEM0 to store reading
   ADC12MCTL0 = ADC12SREF_1 + ADC12INCH_10; // ADC i/p ch A10 = temp sense
-  // Slider stored in to MCTL1 TODO Set reference
-  ADC12MCTL1 = ADC12(REF) + ADC12INCH_5 + ADC12EOS;
+  // Slider stored in to MCTL1 5v reference VCC -> VSS
+  ADC12MCTL1 = ADC12SREF_0 + ADC12INCH_5 + ADC12EOS;
   // ACD12SREF_1 = internal ref = 1.5v
   __delay_cycles(100); // delay to allow Ref to settle
   ADC12CTL0 |= ADC12ENC; // Enable conversion
