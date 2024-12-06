@@ -6,4 +6,5 @@ TODO:
 2. Code the scroll wheel
 	- Read from the in_value:
 3. Code the successive left button presses to change field (wrap around) & right to accepts and exits. (Edit mode --> Display mode)
-	- 
+4. Modify the display functions to increase based off a pre-determined time and date.
+5. TODO: add left and right button logic
