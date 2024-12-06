@@ -34,13 +34,13 @@ void config_ADC(void) {
 }
 
 // Display date
-void displayDate(char* date, volatile long unsigned int globalTime) {
+void displayDate(char* date, volatile long unsigned int globalTime, adc_month, adc_date) {
   const char* month_abbr[] = {
-    "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
+  "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
   //Stores length of month to be used to decrement days later
   const int month_days[] = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
-  unsigned int month = 0;
-  unsigned int day = global_counter / 86400;
+  unsigned int month = adc_month;
+  unsigned int day = adc_date + (global_counter / 86400);
   for (int i = 0; i < 12; i++) {
     if (day <= month_days[i]) {
       month = i;
@@ -62,11 +62,13 @@ void displayDate(char* date, volatile long unsigned int globalTime) {
   Graphics_drawStringCentered(&g_sContext, date, 7, 48, 15, TRANSPARENT_TEXT);
 }
 
+//TODO: modify the display functions so it increases based off a pre-determined months, date, etc.
+// Default: Jan 1, 00:00:00
 // Display time
-void displayTime(char* disp_time, volatile long unsigned int globalTime) {
-  unsigned int hours = (global_counter / 3600) % 24;
-  unsigned int minutes = (global_counter / 60) % 60;
-  unsigned int seconds = global_counter % 60;
+void displayTime(char* disp_time, volatile long unsigned int globalTime, adc_hour, adc_min, adc_sec) {
+  unsigned int hours =  (adc_hour + (global_counter / 3600)) % 24;
+  unsigned int minutes = (adc_min + (global_counter / 60)) % 60;
+  unsigned int seconds = (adc_sec + global_counter) % 60;
   char hours_tens = ((hours - (hours % 10)) / 10) + '0';
   char hours_ones = (hours % 10) + '0';
   char minutes_tens = ((minutes - (minutes % 10)) / 10) + '0';

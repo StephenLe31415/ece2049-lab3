@@ -4,20 +4,18 @@
 
 // Enum for the game state
 typedef enum {
-  INIT,
-  COUNTDOWN,
-  MAIN_GAME,
-  END_SCREEN,
+  DISPLAY,
+  EDIT,
 } state;
 
 // Rin Timer A2
 void runtimerA2(void);
 
 // Display the Date
-void displayDate(char*, volatile long unsigned int);
+void displayDate(char*, volatile long unsigned int, unsigned int, unsigned int);
 
 // Display the Time
-void displayTime(char*, volatile long unsigned int);
+void displayTime(char*, volatile long unsigned int, unsigned int, unsigned int, unsigned int);
 
 // Display the Temp in C
 void displayTempC(char*, float);
