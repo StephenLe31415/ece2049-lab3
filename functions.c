@@ -41,16 +41,17 @@ void displayDate(char* date, volatile long unsigned int globalTime, adc_month, a
   const int month_days[] = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
   unsigned int month = adc_month;
   unsigned int day = adc_date + (global_counter / 86400);
-  for (int i = 0; i < 12; i++) {
-    if (day <= month_days[i]) {
-      month = i;
-      break;
+
+  if (day > month_days[month - 1]) {
+    day -= month_days[month - 1];
+    month ++;
+    if (month > 12) {
+      month = 1;
     }
-    day = day - month_days[i];
   }
+
   char day_tens = ((day - (day % 10)) / 10) + '0';
   char day_ones = (day % 10) + '0';
-
   date[0] = month_abbr[month][0];
   date[1] = month_abbr[month][1];
   date[2] = month_abbr[month][2];
@@ -64,6 +65,7 @@ void displayDate(char* date, volatile long unsigned int globalTime, adc_month, a
 
 //TODO: modify the display functions so it increases based off a pre-determined months, date, etc.
 // Default: Jan 1, 00:00:00
+// Rewrite displayTime so it loops back after Dec 31 - 23:59:59
 // Display time
 void displayTime(char* disp_time, volatile long unsigned int globalTime, adc_hour, adc_min, adc_sec) {
   unsigned int hours =  (adc_hour + (global_counter / 3600)) % 24;
