@@ -25,6 +25,9 @@ void displayTempC(char*, float);
 // Display the Temp in F
 void displayTempF(char*, float);
 
+// Configure the ADC12
+void config_ADC(void);
+
 
 
 
