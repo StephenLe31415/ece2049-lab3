@@ -92,6 +92,6 @@ void main() {
     char tempC[7] = {0};
     char tempF[7] = [0];
   
-    
+    // hello
   }
 }
