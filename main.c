@@ -9,7 +9,10 @@
 // Temperature Sensor Calibration = Reading at 85 degrees C is stored at addr 1A1Ch
 //See device datasheet for TLV table memory mapping
 #define CALADC12_15V_85C *((unsigned int *)0x1A1C)
-unsigned int in_temp;
+#define ONE_MONTH_IN_ADC 342 // 12 segments from 0 --> 2045
+
+volatile unsigned int in_temp;
+volatile unsigned int slider;
 /*----------------------------------------------------------------------------------- */
 volatile long unsigned int global_counter = 16416000;
 
@@ -25,7 +28,11 @@ void main() {
   volatile float temperatureDegC;
   volatile float temperatureDegF;
   volatile float degC_per_bit;
-  volatile float slider;
+  volatile unsigned int month;
+  volatile unsigned int date;
+  volatile unsigned int hour;
+  volatile unsigned int min;
+  volatile unsigned int sec;
   volatile unsigned int bits30, bits85;
   /*----------------------------------------------------------------------------------- */
   WDTCTL = WDTPW | WDTHOLD;    // Stop watchdog timer. Always need to stop this!!
@@ -55,12 +62,25 @@ void main() {
     // Poll busy bit waiting for conversion to complete
     while (ADC12CTL1 & ADC12BUSY)
       __no_operation();
+    // Temp sensor stuff
     in_temp = ADC12MEM0; // Read in results if conversion
     temperatureDegC = (float)((long)in_temp - CALADC12_15V_30C) * degC_per_bit +30.0;
     // Temperature in Fahrenheit Tf = (9/5)*Tc + 32
     temperatureDegF = temperatureDegC * 9.0/5.0 + 32.0;
-    //Set store the slider value in ADC12MEM1 in slider
-    slider = ADC12MEM1;
+
+    // Slider stuff
+    slider = ADC12MEM1; // Set store the slider value in ADC12MEM1 in slider
+    month = 1 + (int)(slider / ONE_MONTH_IN_ADC);
+    if (month == 2) {
+      date = 1 + (int)(slider / 147);
+    } else if (month == 4 &&  month == 6 && month = 9 && month == 11) {
+      date = 1 + (int)(slider / 137);
+    } else {
+      date = 1 + (int)(slider / 133);
+    }
+    hour = (int)(slider / 171);
+    min = (int)(slider / 69);
+    sec = (int)(slider / 69);
   /*----------------------------------------------------------------------------------- */
     
     // Display stuff
