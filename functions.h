@@ -22,16 +22,16 @@ void runtimerA2(void);
 
 // Display functions
 // Display the Date
-void displayDate(char*, volatile long unsigned int, volatile unsigned int, volatile unsigned int);
+void displayDate(char date[7], volatile long unsigned int, volatile unsigned int, volatile unsigned int);
 
 // Display the Time
-void displayTime(char*, volatile long unsigned int, volatile unsigned int, volatile unsigned int, volatile unsigned int);
+void displayTime(char time[9], volatile long unsigned int, volatile unsigned int, volatile unsigned int, volatile unsigned int);
 
 // Display the Temp in C
-void displayTempC(char*, volatile float);
+void displayTempC(char tempC[7], volatile float);
 
 // Display the Temp in F
-void displayTempF(char*, volatile float);
+void displayTempF(char tempF[7], volatile float);
 
 // ADC functions
 // Configure the ADC12
