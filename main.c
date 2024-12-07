@@ -4,6 +4,16 @@
 volatile unsigned int in_temp;
 volatile unsigned int slider;
 volatile long unsigned int global_counter = 16416000;
+volatile float temperatureDegC = 0;
+volatile float temperatureDegF = 0;
+volatile float degC_per_bit;
+volatile unsigned int adc_month = 1;
+volatile unsigned int adc_date = 0;
+volatile unsigned int adc_hour = 0;
+volatile unsigned int adc_min = 0;
+volatile unsigned int adc_sec = 0;
+volatile unsigned int bits30, bits85;
+volatile state mode;
 
 #pragma vector=TIMER2_A0_VECTOR //What does this do? No one knows...
 __interrupt void timer_a2() {
@@ -13,17 +23,6 @@ __interrupt void timer_a2() {
 }
 
 void main() {
-  volatile float temperatureDegC = 0;
-  volatile float temperatureDegF = 0;
-  volatile float degC_per_bit;
-  volatile unsigned int adc_month = 1;
-  volatile unsigned int adc_date = 0;
-  volatile unsigned int adc_hour = 0;
-  volatile unsigned int adc_min = 0;
-  volatile unsigned int adc_sec = 0;
-  volatile unsigned int bits30, bits85;
-  volatile state mode;
-
   WDTCTL = WDTPW | WDTHOLD; // Stop watchdog timer. Always need to stop this!!
 
   _BIS_SR(GIE); // Global interrupt enable

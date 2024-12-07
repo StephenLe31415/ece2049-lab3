@@ -3,22 +3,19 @@
 // User written functions
 
 //Global timer A2 for clock, frequency is 32768 with an /8 division interrupt timing is 1 second.
-void runtimerA2(void)
-{
+void runtimerA2(void) {
   TA2CTL = TASSEL_1 | MC_1 | ID_3;
   TA2CCR0 = 4095;
   TA2CCTL0 = CCIE;
 }
 
 // Display date
-void displayDate(char[7] date, volatile long unsigned int global_counter, volatile unsigned int adc_month, volatile unsigned int adc_date) {
+void displayDate(char date[7], volatile long unsigned int global_counter, volatile unsigned int adc_month, volatile unsigned int adc_date) {
   const char* month_abbr[] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
   //Stores length of month to be used to decrement days later
   const int month_days[] = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
   unsigned int month = adc_month;
   unsigned int day = adc_date + (global_counter / 86400);
-
-  unsigned int month = adc_month;
 
   if (day > month_days[month - 1]) {
     day -= month_days[month - 1];
