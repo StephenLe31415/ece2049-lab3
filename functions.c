@@ -10,7 +10,7 @@ void runtimerA2(void) {
 }
 
 // Display date
-void displayDate(char* date, volatile long unsigned int global_counter, volatile unsigned int adc_month, volatile unsigned int adc_date) {
+void displayDate(char date[7], volatile long unsigned int global_counter, volatile unsigned int adc_month, volatile unsigned int adc_date) {
   const char* month_abbr[12] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
   //Stores length of month to be used to decrement days later
   const int month_days[12] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
@@ -34,15 +34,13 @@ void displayDate(char* date, volatile long unsigned int global_counter, volatile
   date[4] = day_tens;
   date[5] = day_ones;
   date[6] = '\0';
-
-  Graphics_drawStringCentered(&g_sContext, date, 7, 48, 15, TRANSPARENT_TEXT);
 }
 
 //TODO: modify the display functions so it increases based off a pre-determined months, date, etc.
 // Default: Jan 1, 00:00:00
 // Rewrite displayTime so it loops back after Dec 31 - 23:59:59
 // Display time
-void displayTime(char* disp_time, volatile long unsigned int global_counter, volatile unsigned int adc_hour, volatile unsigned int adc_min, volatile unsigned int adc_sec) {
+void displayTime(char disp_time[9], volatile long unsigned int global_counter, volatile unsigned int adc_hour, volatile unsigned int adc_min, volatile unsigned int adc_sec) {
   unsigned int hours =  (adc_hour + (global_counter / 3600)) % 24;
   unsigned int minutes = (adc_min + (global_counter / 60)) % 60;
   unsigned int seconds = (adc_sec + global_counter) % 60;
@@ -62,12 +60,10 @@ void displayTime(char* disp_time, volatile long unsigned int global_counter, vol
   disp_time[6] = seconds_tens;
   disp_time[7] = seconds_ones;
   disp_time[8] = '\0';
-
-  Graphics_drawStringCentered(&g_sContext, disp_time, 9, 48, 35, TRANSPARENT_TEXT);
 }
 
 // Display temp in C
-void displayTempC(char* disp_c, volatile float temperatureDegC) {
+void displayTempC(char disp_c[7], volatile float temperatureDegC) {
   temperatureDegC = temperatureDegC * 10;
   unsigned int int_degC = (unsigned int)temperatureDegC;
   char c_tens = ((int_degC / 100) % 10) + '0';
@@ -80,12 +76,10 @@ void displayTempC(char* disp_c, volatile float temperatureDegC) {
   disp_c[3] = c_tenths;
   disp_c[4] = ' ';
   disp_c[5] = 'C';
-
-  Graphics_drawStringCentered(&g_sContext, disp_c, 6, 48, 45, TRANSPARENT_TEXT);
 }
 
 // Display temp in F
-void displayTempF(char* tempF, volatile float temperatureDegF) {
+void displayTempF(char tempF[7], volatile float temperatureDegF) {
   temperatureDegF = temperatureDegF * 10;
   unsigned int int_degF = (unsigned int)temperatureDegF;
   char f_tens = ((int_degF / 100) % 10) + '0';
@@ -98,8 +92,6 @@ void displayTempF(char* tempF, volatile float temperatureDegF) {
   tempF[3] = f_tenths;
   tempF[4] = ' ';
   tempF[5] = 'F';
-
-  Graphics_drawStringCentered(&g_sContext, tempF, 6, 48, 55, TRANSPARENT_TEXT);
 }
 
 

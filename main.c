@@ -53,9 +53,16 @@ void main() {
           temperatureDegF = temperatureDegC * 9.0/5.0 + 32.0; // Temperature in Fahrenheit Tf = (9/5)*Tc + 32
           // Display stuff
           displayDate(date, global_counter, adc_month, adc_date);
+          Graphics_drawStringCentered(&g_sContext, date, 7, 48, 15, TRANSPARENT_TEXT);
+          
           displayTime(time, global_counter, adc_hour, adc_min, adc_sec);
+          Graphics_drawStringCentered(&g_sContext, disp_time, 9, 48, 35, TRANSPARENT_TEXT);
+          
           displayTempC(tempC, temperatureDegC);
+          Graphics_drawStringCentered(&g_sContext, disp_c, 6, 48, 45, TRANSPARENT_TEXT);
+          
           displayTempF(tempF, temperatureDegF);
+          Graphics_drawStringCentered(&g_sContext, tempF, 6, 48, 55, TRANSPARENT_TEXT);
         }
 
         mode = EDIT;
