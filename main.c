@@ -1,7 +1,5 @@
-#include <stdlib.h>
-#include <msp430.h>
-#include "peripherals.h"
 #include "functions.h"
+
 /*----------------------------------------------------------------------------------- */
 // Temperature Sensor Calibration = Reading at 30 degrees C is stored at addr 1A1Ah
 // See end of datasheet for TLV table memory mapping
@@ -41,27 +39,27 @@ void main() {
   _BIS_SR(GIE); // Global interrupt enable
 
   // Initialize the MSP430
-  config_ADC(); // Config the ADC12
-  initLeds();
-  init_user_leds();
-  init_buttons();
+  // configKeypad();
+  // initLeds();
+  // init_user_leds();
+  // init_board_buttons();
+  config_ADC(degC_per_bit, bits30, bits85); // Config the ADC12
   configDisplay();
-  configKeypad();
   Graphics_clearDisplay(&g_sContext); // Clear the display
   runtimerA2(); // Start the A2 timer
   // Array for display functions.
   char date[7] = {0};
   char time[9] = {0};
   char tempC[7] = {0};
-  char tempF[7] = [0];
+  char tempF[7] = {0};
   mode = DISPLAY; // Main  mode
-  user_input = read_launchpad_button(); // Read the User's Push-buttons
+  unsigned int user_input = read_launchpad_button(); // Read the User's Push-buttons
 
   while (1) {
     switch(mode) {
       case DISPLAY: {
         while(user_input != 1) { // Left button
-          ADC_2_Temp(); // ADC Conversion stuff
+          ADC_2_Temp(in_temp); // ADC Conversion stuff:populate in_temp
           temperatureDegC = (float)((long)in_temp - CALADC12_15V_30C) * degC_per_bit +30.0;
           temperatureDegF = temperatureDegC * 9.0/5.0 + 32.0; // Temperature in Fahrenheit Tf = (9/5)*Tc + 32
           // Display stuff
@@ -78,42 +76,42 @@ void main() {
       case EDIT: {
         int num_pressed = 0;
         while (user_input != 2) { // Right button
-          ADC_2_Time(); // ADC Conversion stuff
+          ADC_2_Time(slider); // ADC Conversion stuff: populate slider
           num_pressed += (read_launchpad_button() % 5); // Wrap around to "Month" logic
 
           switch (num_pressed) {
             case 0: { //MONTH
-              adc_month = 1 + (unsigned int)(slider / ONE_MONTH_IN_ADC);
+              adc_month = 1 + (volatile unsigned int)(slider / ONE_MONTH_IN_ADC);
               displayDate(date, 0, adc_month, adc_date); // "Date" has not been updated yet.
               break;    
             }
 
             case 1: { // DATE
               if (adc_month == 2) {
-              adc_date = 1 + (unsigned int)(slider / 147);
-              } else if (adc_month == 4 &&  adc_month == 6 && adc_month = 9 && adc_month == 11) {
-                date = 1 + (unsigned int)(slider / 137);
+                adc_date = 1 + (volatile unsigned int)(slider / 147);
+              } else if ((adc_month == 4) &&  (adc_month == 6) && (adc_month = 9) && (adc_month == 11)) {
+                adc_date = 1 + (volatile unsigned int)(slider / 137);
               } else {
-                adc_date = 1 + (unsigned int)(slider / 133);
+                adc_date = 1 + (volatile unsigned int)(slider / 133);
               } 
               displayDate(date, 0, adc_month, adc_date); // "Month" and "Date" have been updated
               break;   
             }
 
             case 2: { // HOUR
-              adc_hour = (unsigned int)(slider / 171);    
+              adc_hour = (volatile unsigned int)(slider / 171);    
               displayTime(time, 0, adc_hour, adc_min, adc_sec); // "Min" and "Sec" have not been updated --> use the previous values stored.
               break;
             }
 
             case 3: { // MIN
-              adc_min = (unsigned int)(slider / 69);
+              adc_min = (volatile unsigned int)(slider / 69);
               displayTime(time, 0, adc_hour, adc_min, adc_sec); // "Hour" has been updated. "Sec" has not been updated
               break;
             }
 
             case 4: { // SEC
-              adc_sec = (unsigned int)(slider / 69);
+              adc_sec = (volatile unsigned int)(slider / 69);
               displayTime(time, 0, adc_hour, adc_min, adc_sec); // Every param has been updated.
               break;    
             }

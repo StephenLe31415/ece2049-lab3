@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <msp430.h>
 #include <stdint.h>
+#include "peripherals.h"
 
 // Enum for the game state
 typedef enum {
@@ -13,16 +14,16 @@ void runtimerA2(void);
 
 // Display functions
 // Display the Date
-void displayDate(char*, volatile long unsigned int, unsigned int, unsigned int);
+void displayDate(char*, volatile long unsigned int, volatile unsigned int, volatile unsigned int);
 
 // Display the Time
-void displayTime(char*, volatile long unsigned int, unsigned int, unsigned int, unsigned int);
+void displayTime(char*, volatile long unsigned int, volatile unsigned int, volatile unsigned int, volatile unsigned int);
 
 // Display the Temp in C
-void displayTempC(char*, float);
+void displayTempC(char*, volatile float);
 
 // Display the Temp in F
-void displayTempF(char*, float);
+void displayTempF(char*, volatile float);
 
 // ADC functions
 // Configure the ADC12

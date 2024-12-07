@@ -1,4 +1,5 @@
 #include "functions.h"
+
 // User written functions
 
 //Global timer A2 for clock, frequency is 32768 with an /8 division interrupt timing is 1 second.
@@ -10,7 +11,7 @@ void runtimerA2(void)
 }
 
 // Display date
-void displayDate(char* date, volatile long unsigned int globalTime, adc_month, adc_date) {
+void displayDate(char* date, volatile long unsigned int global_counter, volatile unsigned int adc_month, volatile unsigned int adc_date) {
   const char* month_abbr[] = {
   "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
   //Stores length of month to be used to decrement days later
@@ -43,7 +44,7 @@ void displayDate(char* date, volatile long unsigned int globalTime, adc_month, a
 // Default: Jan 1, 00:00:00
 // Rewrite displayTime so it loops back after Dec 31 - 23:59:59
 // Display time
-void displayTime(char* disp_time, volatile long unsigned int globalTime, adc_hour, adc_min, adc_sec) {
+void displayTime(char* disp_time, volatile long unsigned int global_counter, volatile unsigned int adc_hour, volatile unsigned int adc_min, volatile unsigned int adc_sec) {
   unsigned int hours =  (adc_hour + (global_counter / 3600)) % 24;
   unsigned int minutes = (adc_min + (global_counter / 60)) % 60;
   unsigned int seconds = (adc_sec + global_counter) % 60;
@@ -68,7 +69,7 @@ void displayTime(char* disp_time, volatile long unsigned int globalTime, adc_hou
 }
 
 // Display temp in C
-void displayTempC(char* disp_c, float temperatureDegC) {
+void displayTempC(char* disp_c, volatile float temperatureDegC) {
   temperatureDegC = temperatureDegC * 10;
   unsigned int int_degC = (unsigned int)temperatureDegC;
   char c_tens = ((int_degC / 100) % 10) + '0';
@@ -86,7 +87,7 @@ void displayTempC(char* disp_c, float temperatureDegC) {
 }
 
 // Display temp in F
-void displayTempF(char* tempF, float temperatureDegF) {
+void displayTempF(char* tempF, volatile float temperatureDegF) {
   temperatureDegF = temperatureDegF * 10;
   unsigned int int_degF = (unsigned int)temperatureDegF;
   char f_tens = ((int_degF / 100) % 10) + '0';
@@ -123,11 +124,10 @@ void init_launchpad_button() {
 // Read from the User's launchpad buttons
 unsigned int read_launchpad_button() {
   unsigned int pressed = 0;
-  if (P2IN & BIT1 == BIT1) {
+  if ((P2IN & BIT1) == BIT1) {
     pressed = 1;
-  }
-  if (P1IN & BIT 1 == BIT1) {
-    pressed 2;
+  } else if ((P1IN & BIT1) == BIT1) {
+    pressed = 2;
   } else {
     pressed = 0;
   }
@@ -135,7 +135,7 @@ unsigned int read_launchpad_button() {
 }
 
 // Config ADC12
-void config_ADC(degC_per_bit, bits30, bits85) {
+void config_ADC(volatile float degC_per_bit, volatile unsigned int bits30, volatile unsigned int bits85) {
   //Set Port P8.0 (the slider) to digital I/O mode
   P8OUT |= BIT0;
 
