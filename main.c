@@ -78,7 +78,7 @@ void main() {
             case 1: { // DATE
               if (adc_month == 2) {
                 adc_date = 1 + (volatile unsigned int)(slider / 147);
-              } else if ((adc_month == 4) &&  (adc_month == 6) && (adc_month = 9) && (adc_month == 11)) {
+              } else if ((adc_month == 4) &&  (adc_month == 6) && (adc_month == 9) && (adc_month == 11)) {
                 adc_date = 1 + (volatile unsigned int)(slider / 137);
               } else {
                 adc_date = 1 + (volatile unsigned int)(slider / 133);

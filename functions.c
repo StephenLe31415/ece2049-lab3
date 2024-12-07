@@ -10,26 +10,26 @@ void runtimerA2(void) {
 }
 
 // Display date
-void displayDate(char date[7], volatile long unsigned int global_counter, volatile unsigned int adc_month, volatile unsigned int adc_date) {
-  const char* month_abbr[] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
+void displayDate(char* date, volatile long unsigned int global_counter, volatile unsigned int adc_month, volatile unsigned int adc_date) {
+  const char* month_abbr[12] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
   //Stores length of month to be used to decrement days later
-  const int month_days[] = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
-  unsigned int month = adc_month;
-  unsigned int day = adc_date + (global_counter / 86400);
+  const int month_days[12] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+  // unsigned int month = adc_month;
+  adc_date = adc_date + (global_counter / 86400);
 
-  if (day > month_days[month - 1]) {
-    day -= month_days[month - 1];
-    month ++;
-    if (month > 12) {
-      month = 1;
+  if (adc_date > month_days[adc_month - 1]) {
+    adc_date -= month_days[adc_month - 1];
+    adc_month ++;
+    if (adc_month > 12) {
+      adc_month = 1;
     }
   }
 
-  char day_tens = ((day - (day % 10)) / 10) + '0';
-  char day_ones = (day % 10) + '0';
-  date[0] = month_abbr[month][0];
-  date[1] = month_abbr[month][1];
-  date[2] = month_abbr[month][2];
+  char day_tens = ((adc_date - (adc_date % 10)) / 10) + '0';
+  char day_ones = (adc_date % 10) + '0';
+  date[0] = month_abbr[adc_month][0];
+  date[1] = month_abbr[adc_month][1];
+  date[2] = month_abbr[adc_month][2];
   date[3] = ' ';
   date[4] = day_tens;
   date[5] = day_ones;
