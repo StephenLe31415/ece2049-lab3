@@ -149,7 +149,7 @@ void config_ADC(volatile float degC_per_bit, volatile unsigned int bits30, volat
 }
 
 // ADC 2 Time --> poopulate slider
-void ADC_2_Time(volatile unsigned int slider) {
+volatile unsigned int ADC_2_Time(void) {
   ADC12CTL0 &= ~ADC12SC; // clear the start bit
   ADC12CTL0 |= ADC12SC; // Sampling and conversion start
   // Single conversion (single channel)
@@ -157,11 +157,11 @@ void ADC_2_Time(volatile unsigned int slider) {
   while (ADC12CTL1 & ADC12BUSY)
   __no_operation();
 
-  // Slider stuff
-  slider = ADC12MEM1; // Set store the slider value in ADC12MEM1 in slider
+  volatile unsigned int slider = ADC12MEM1; // Set store the slider value in ADC12MEM1 in slider
+  return slider;
 }
 
-void ADC_2_Temp(volatile unsigned int in_temp) {
+volatile unsigned int ADC_2_Temp(void) {
   ADC12CTL0 &= ~ADC12SC; // clear the start bit
   ADC12CTL0 |= ADC12SC; // Sampling and conversion start
   // Single conversion (single channel)
@@ -169,7 +169,8 @@ void ADC_2_Temp(volatile unsigned int in_temp) {
   while (ADC12CTL1 & ADC12BUSY)
     __no_operation();
   // Temp sensor stuff
-  in_temp = ADC12MEM0; // Read in results if conversion
+  volatile unsigned int in_temp = ADC12MEM0; // Read in results if conversion
+  return in_temp;
 }
 
 /***************************************************************************************************************************************** */

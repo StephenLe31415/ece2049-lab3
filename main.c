@@ -1,12 +1,12 @@
 #include "functions.h"
 
 // Globals
-volatile unsigned int in_temp;
-volatile unsigned int slider;
+volatile unsigned int in_temp = 0;
+volatile unsigned int slider = 0;
 volatile long unsigned int global_counter = 16416000;
 volatile float temperatureDegC = 0;
 volatile float temperatureDegF = 0;
-volatile float degC_per_bit;
+volatile float degC_per_bit = 0;
 volatile unsigned int adc_month = 1;
 volatile unsigned int adc_date = 0;
 volatile unsigned int adc_hour = 0;
@@ -48,7 +48,7 @@ void main() {
     switch(mode) {
       case DISPLAY: {
         while(user_input != 1) { // Left button
-          ADC_2_Temp(in_temp); // ADC Conversion stuff:populate in_temp
+          in_temp = ADC_2_Temp(); // ADC Conversion stuff:populate in_temp
           temperatureDegC = (float)((long)in_temp - CALADC12_15V_30C) * degC_per_bit +30.0;
           temperatureDegF = temperatureDegC * 9.0/5.0 + 32.0; // Temperature in Fahrenheit Tf = (9/5)*Tc + 32
           // Display stuff
@@ -72,7 +72,7 @@ void main() {
       case EDIT: {
         int num_pressed = 0;
         while (user_input != 2) { // Right button
-          ADC_2_Time(slider); // ADC Conversion stuff: populate slider
+          slider = ADC_2_Time(); // ADC Conversion stuff: populate slider
           num_pressed += (read_launchpad_button() % 5); // Wrap around to "Month" logic
 
           switch (num_pressed) {

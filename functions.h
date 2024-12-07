@@ -38,10 +38,10 @@ void displayTempF(char tempF[7], volatile float);
 void config_ADC(volatile float, volatile unsigned int, volatile unsigned int);
 
 // Convert ADC 2 Time --> Populate slider
-void ADC_2_Time(volatile unsigned int);
+volatile unsigned int ADC_2_Time(void);
 
 // Convert ADC 2 Temp --> Populate in_temp
-void ADC_2_Temp(volatile unsigned int);
+volatile unsigned int ADC_2_Temp(void);
 
 // Buttons functions
 // Init user's launchpad buttons
