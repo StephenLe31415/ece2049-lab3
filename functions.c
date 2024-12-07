@@ -158,6 +158,30 @@ unsigned int read_launchpad_button() {
   return pressed;
 }
 
+// ADC 2 Time --> poopulate slider
+void ADC_2_Time(volatile unsigned int slider) {
+  ADC12CTL0 &= ~ADC12SC; // clear the start bit
+  ADC12CTL0 |= ADC12SC; // Sampling and conversion start
+  // Single conversion (single channel)
+  // Poll busy bit waiting for conversion to complete
+  while (ADC12CTL1 & ADC12BUSY)
+  __no_operation();
+
+  // Slider stuff
+  slider = ADC12MEM1; // Set store the slider value in ADC12MEM1 in slider
+}
+
+void ADC_2_Temp(volatile unsigned int in_temp) {
+  ADC12CTL0 &= ~ADC12SC; // clear the start bit
+  ADC12CTL0 |= ADC12SC; // Sampling and conversion start
+  // Single conversion (single channel)
+  // Poll busy bit waiting for conversion to complete
+  while (ADC12CTL1 & ADC12BUSY)
+    __no_operation();
+  // Temp sensor stuff
+  in_temp = ADC12MEM0; // Read in results if conversion
+}
+
 /***************************************************************************************************************************************** */
 // Initializes the two user LEDs
 void init_user_leds()

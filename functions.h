@@ -11,6 +11,7 @@ typedef enum {
 // Rin Timer A2
 void runtimerA2(void);
 
+// Display functions
 // Display the Date
 void displayDate(char*, volatile long unsigned int, unsigned int, unsigned int);
 
@@ -23,16 +24,22 @@ void displayTempC(char*, float);
 // Display the Temp in F
 void displayTempF(char*, float);
 
+// ADC functions
 // Configure the ADC12
 void config_ADC(void);
 
+// Convert ADC 2 Time --> Populate slider
+void ADC_2_Time(volatile unsigned int);
+
+// Convert ADC 2 Temp --> Populate in_temp
+void ADC_2_Temp(volatile unsigned int);
+
+// Buttons functions
 // Init user's launchpad buttons
 void init_launchpad_button();
 
 // Read user's launchpad button
 unsigned int read_launchpad_button();
-
-
 
 
 

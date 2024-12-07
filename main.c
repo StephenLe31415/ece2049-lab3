@@ -25,74 +25,103 @@ __interrupt void timer_a2() {
 
 void main() {
   /*----------------------------------------------------------------------------------- */
-  volatile float temperatureDegC;
-  volatile float temperatureDegF;
+  volatile float temperatureDegC = 0;
+  volatile float temperatureDegF = 0;
   volatile float degC_per_bit;
-  volatile unsigned int month;
-  volatile unsigned int date;
-  volatile unsigned int hour;
-  volatile unsigned int min;
-  volatile unsigned int sec;
+  volatile unsigned int adc_month = 1;
+  volatile unsigned int adc_date = 0;
+  volatile unsigned int adc_hour = 0;
+  volatile unsigned int adc_min = 0;
+  volatile unsigned int adc_sec = 0;
   volatile unsigned int bits30, bits85;
+  volatile state mode;
   /*----------------------------------------------------------------------------------- */
-  WDTCTL = WDTPW | WDTHOLD;    // Stop watchdog timer. Always need to stop this!!
-  // You can then configure it properly, if desired
+  WDTCTL = WDTPW | WDTHOLD; // Stop watchdog timer. Always need to stop this!!
 
-  // Global interrupt enable
-  _BIS_SR(GIE);
-
-  // Configure the ADC12
-  config_ADC();
+  _BIS_SR(GIE); // Global interrupt enable
 
   // Initialize the MSP430
+  config_ADC(); // Config the ADC12
   initLeds();
   init_user_leds();
   init_buttons();
   configDisplay();
   configKeypad();
-  // Clear the display
-  Graphics_clearDisplay(&g_sContext);
-  //Start the A2 timer
-  runtimerA2();
-  while (1) {
-  /*----------------------------------------------------------------------------------- */
-    ADC12CTL0 &= ~ADC12SC; // clear the start bit
-    ADC12CTL0 |= ADC12SC; // Sampling and conversion start
-    // Single conversion (single channel)
-    // Poll busy bit waiting for conversion to complete
-    while (ADC12CTL1 & ADC12BUSY)
-      __no_operation();
-    // Temp sensor stuff
-    in_temp = ADC12MEM0; // Read in results if conversion
-    temperatureDegC = (float)((long)in_temp - CALADC12_15V_30C) * degC_per_bit +30.0;
-    // Temperature in Fahrenheit Tf = (9/5)*Tc + 32
-    temperatureDegF = temperatureDegC * 9.0/5.0 + 32.0;
+  Graphics_clearDisplay(&g_sContext); // Clear the display
+  runtimerA2(); // Start the A2 timer
+  // Array for display functions.
+  char date[7] = {0};
+  char time[9] = {0};
+  char tempC[7] = {0};
+  char tempF[7] = [0];
+  mode = DISPLAY; // Main  mode
+  user_input = read_launchpad_button(); // Read the User's Push-buttons
 
-    // Slider stuff
-    slider = ADC12MEM1; // Set store the slider value in ADC12MEM1 in slider
-    month = 1 + (int)(slider / ONE_MONTH_IN_ADC);
-    if (month == 2) {
-      date = 1 + (int)(slider / 147);
-    } else if (month == 4 &&  month == 6 && month = 9 && month == 11) {
-      date = 1 + (int)(slider / 137);
-    } else {
-      date = 1 + (int)(slider / 133);
-    }
-    hour = (int)(slider / 171);
-    min = (int)(slider / 69);
-    sec = (int)(slider / 69);
-  /*----------------------------------------------------------------------------------- */
-    
-    // Display stuff
-    char date[7] = {0};
-    char time[9] = {0};
-    char tempC[7] = {0};
-    char tempF[7] = [0];
-    displayDate(date, global_counter);
-    displayTime(time, global_counter);
-    displayTempC(tempC, temperatureDegC);
-    displayTempF(tempF, temperatureDegF);
-  
-    
+  while (1) {
+    switch(mode) {
+      case DISPLAY: {
+        while(user_input != 1) { //Left button
+          temperatureDegC = (float)((long)in_temp - CALADC12_15V_30C) * degC_per_bit +30.0;
+          temperatureDegF = temperatureDegC * 9.0/5.0 + 32.0; // Temperature in Fahrenheit Tf = (9/5)*Tc + 32
+          // Display stuff
+          displayDate(date, global_counter, adc_month, adc_date);
+          displayTime(time, global_counter, adc_hour, adc_min, adc_sec);
+          displayTempC(tempC, temperatureDegC);
+          displayTempF(tempF, temperatureDegF);
+        }
+
+        mode = EDIT;
+        break;
+      }
+
+      case EDIT: {
+        int num_pressed = 0;
+        while (user_input != 2) {
+          ADC_2_Time(); // ADC Conversion stuff
+          num_pressed += (read_launchpad_button() % 5); // Wrap around to "Month" logic
+
+          switch (num_pressed) {
+            case 0: { //MONTH
+              adc_month = 1 + (unsigned int)(slider / ONE_MONTH_IN_ADC);
+              displayDate(date, 0, adc_month, adc_date); // "Date" has not been updated yet.
+              break;    
+            }
+
+            case 1: { // DATE
+              if (adc_month == 2) {
+              adc_date = 1 + (unsigned int)(slider / 147);
+              } else if (adc_month == 4 &&  adc_month == 6 && adc_month = 9 && adc_month == 11) {
+                date = 1 + (unsigned int)(slider / 137);
+              } else {
+                adc_date = 1 + (unsigned int)(slider / 133);
+              } 
+              displayDate(date, 0, adc_month, adc_date); // "Month" and "Date" have been updated
+              break;   
+            }
+
+            case 2: { // HOUR
+              adc_hour = (unsigned int)(slider / 171);    
+              displayTime(time, 0, adc_hour, adc_min, adc_sec); // "Min" and "Sec" have not been updated --> use the previous values stored.
+              break;
+            }
+
+            case 3: { // MIN
+              adc_min = (unsigned int)(slider / 69);
+              displayTime(time, 0, adc_hour, adc_min, adc_sec); // "Hour" has been updated. "Sec" has not been updated
+              break;
+            }
+
+            case 4: { // SEC
+              adc_sec = (unsigned int)(slider / 69);
+              displayTime(time, 0, adc_hour, adc_min, adc_sec); // Every param has been updated.
+              break;    
+            }
+          }
+        }
+
+        mode = DISPLAY;
+        break;
+      }
+    }  
   }
 }
