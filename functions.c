@@ -11,7 +11,7 @@ void runtimerA2(void)
 }
 
 // Display date
-void displayDate(char* date, volatile long unsigned int global_counter, volatile unsigned int adc_month, volatile unsigned int adc_date) {
+void displayDate(char[7] date, volatile long unsigned int global_counter, volatile unsigned int adc_month, volatile unsigned int adc_date) {
   const char* month_abbr[] = {
   "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
   //Stores length of month to be used to decrement days later
