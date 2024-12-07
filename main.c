@@ -70,11 +70,11 @@ void main() {
       }
 
       case EDIT: {
-        int num_pressed = 0;
+        unsigned int num_pressed = 0;
         while (user_input != 2) { // Right button
           slider = ADC_2_Time(); // ADC Conversion stuff: populate slider
           num_pressed += (read_launchpad_button() % 5); // Wrap around to "Month" logic
-
+          // Traversing logic
           switch (num_pressed) {
             case 0: { //MONTH
               adc_month = 1 + (volatile unsigned int)(slider / ONE_MONTH_IN_ADC);

@@ -114,9 +114,9 @@ void init_launchpad_button() {
 // Read from the User's launchpad buttons
 unsigned int read_launchpad_button() {
   unsigned int pressed = 0;
-  if ((P2IN & BIT1) == BIT1) {
+  if ((~P2IN & BIT1) == BIT1) {
     pressed = 1;
-  } else if ((P1IN & BIT1) == BIT1) {
+  } else if ((~P1IN & BIT1) == BIT1) {
     pressed = 2;
   } else {
     pressed = 0;
