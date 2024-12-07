@@ -56,10 +56,10 @@ void main() {
           Graphics_drawStringCentered(&g_sContext, date, 7, 48, 15, TRANSPARENT_TEXT);
           
           displayTime(time, global_counter, adc_hour, adc_min, adc_sec);
-          Graphics_drawStringCentered(&g_sContext, disp_time, 9, 48, 35, TRANSPARENT_TEXT);
+          Graphics_drawStringCentered(&g_sContext, time, 9, 48, 35, TRANSPARENT_TEXT);
           
           displayTempC(tempC, temperatureDegC);
-          Graphics_drawStringCentered(&g_sContext, disp_c, 6, 48, 45, TRANSPARENT_TEXT);
+          Graphics_drawStringCentered(&g_sContext, tempC, 6, 48, 45, TRANSPARENT_TEXT);
           
           displayTempF(tempF, temperatureDegF);
           Graphics_drawStringCentered(&g_sContext, tempF, 6, 48, 55, TRANSPARENT_TEXT);
