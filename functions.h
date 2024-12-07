@@ -3,6 +3,14 @@
 #include <stdint.h>
 #include "peripherals.h"
 
+// Temperature Sensor Calibration = Reading at 30 degrees C is stored at addr 1A1Ah
+// See end of datasheet for TLV table memory mapping
+#define CALADC12_15V_30C *((unsigned int *)0x1A1A)
+// Temperature Sensor Calibration = Reading at 85 degrees C is stored at addr 1A1Ch
+//See device datasheet for TLV table memory mapping
+#define CALADC12_15V_85C *((unsigned int *)0x1A1C)
+#define ONE_MONTH_IN_ADC 342 // 12 segments from 0 --> 2045
+
 // Enum for the game state
 typedef enum {
   DISPLAY,
