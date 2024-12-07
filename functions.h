@@ -26,6 +26,11 @@ void displayTempF(char*, float);
 // Configure the ADC12
 void config_ADC(void);
 
+// Init user's launchpad buttons
+void init_launchpad_button();
+
+// Read user's launchpad button
+unsigned int read_launchpad_button();
 
 
 

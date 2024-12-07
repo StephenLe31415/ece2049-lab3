@@ -127,6 +127,37 @@ void displayTempF(char* tempF, float temperatureDegF) {
   Graphics_drawStringCentered(&g_sContext, tempF, 6, 48, 55, TRANSPARENT_TEXT);
 }
 
+
+//Init User's Launchpad buttons: P2.1 (L) and P1.1 (R) (pull-up resistor) --> check for 0
+void init_launchpad_button() {
+  // Set digital I/O mode for pins 2.1 and 1.1
+  P2SEL &= ~BIT1;
+  P1SEL &= ~BIT1;
+  // Set the same pins as inputs
+  P2DIR &= ~BIT1;
+  P1DIR &= ~BIT1;
+  // Set pull resistors on the pins
+  P2REN |= BIT1;
+  P1REN |= BIT1;
+  // Set them to be pull-up resistors
+  P2OUT |= BIT1;
+  P1OUT |= BIT1;
+}
+
+// Read from the User's launchpad buttons
+unsigned int read_launchpad_button() {
+  unsigned int pressed = 0;
+  if (P2IN & BIT1 == BIT1) {
+    pressed = 1;
+  }
+  if (P1IN & BIT 1 == BIT1) {
+    pressed 2;
+  } else {
+    pressed = 0;
+  }
+  return pressed;
+}
+
 /***************************************************************************************************************************************** */
 // Initializes the two user LEDs
 void init_user_leds()
