@@ -60,7 +60,8 @@ void main() {
   while (1) {
     switch(mode) {
       case DISPLAY: {
-        while(user_input != 1) { //Left button
+        while(user_input != 1) { // Left button
+          ADC_2_Temp(); // ADC Conversion stuff
           temperatureDegC = (float)((long)in_temp - CALADC12_15V_30C) * degC_per_bit +30.0;
           temperatureDegF = temperatureDegC * 9.0/5.0 + 32.0; // Temperature in Fahrenheit Tf = (9/5)*Tc + 32
           // Display stuff
@@ -76,7 +77,7 @@ void main() {
 
       case EDIT: {
         int num_pressed = 0;
-        while (user_input != 2) {
+        while (user_input != 2) { // Right button
           ADC_2_Time(); // ADC Conversion stuff
           num_pressed += (read_launchpad_button() % 5); // Wrap around to "Month" logic
 
@@ -116,12 +117,12 @@ void main() {
               displayTime(time, 0, adc_hour, adc_min, adc_sec); // Every param has been updated.
               break;    
             }
-          }
-        }
+          } // End of switch num_pressed
+        } // End of while loop
 
         mode = DISPLAY;
         break;
-      }
-    }  
-  }
-}
+      } // End of case EDIT
+    }  // End of switch mode
+  } // End of while(1)
+} // End of main()

@@ -26,7 +26,7 @@ void displayTempF(char*, float);
 
 // ADC functions
 // Configure the ADC12
-void config_ADC(void);
+void config_ADC(volatile float, volatile unsigned int, volatile unsigned int);
 
 // Convert ADC 2 Time --> Populate slider
 void ADC_2_Time(volatile unsigned int);
@@ -53,10 +53,7 @@ void init_user_leds();
 void set_user_leds(unsigned char uled);
 
 // Initializes the buttons for input
-void init_buttons();
+void init_board_buttons();
 
 //Reads the four buttons
-unsigned int read_buttons();
-
-//Turn on the buzzer
-void buzzer_on(int ticks);
+unsigned int read_board_buttons();

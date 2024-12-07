@@ -9,30 +9,6 @@ void runtimerA2(void)
   TA2CCTL0 = CCIE;
 }
 
-// Config ADC12
-void config_ADC(void) {
-  //Set Port P8.0 (the slider) to digital I/O mode
-  P8OUT |= BIT0;
-
-  // TODO The ADC needs to read sequentially from the temp sensor, then the slider. It needs to read in from INCH_5 to a MCTL register with a VREF of 5V
-  REFCTL0 &= ~REFMSTR; // Reset REFMSTR to hand over control of
-  // internal reference voltages to
-  // ADC12_A control registers
-  ADC12CTL0 = ADC12SHT0_9 | ADC12REFON | ADC12ON; // Internal ref = 1.5V
-  ADC12CTL1 = ADC12SHP + ADC12CONSEQ_1; // Enable sample timer and set sequential mode
-  // Using ADC12MEM0 to store reading
-  ADC12MCTL0 = ADC12SREF_1 + ADC12INCH_10; // ADC i/p ch A10 = temp sense
-  // Slider stored in to MCTL1 5v reference VCC -> VSS
-  ADC12MCTL1 = ADC12SREF_0 + ADC12INCH_5 + ADC12EOS;
-  // ACD12SREF_1 = internal ref = 1.5v
-  __delay_cycles(100); // delay to allow Ref to settle
-  ADC12CTL0 |= ADC12ENC; // Enable conversion
-  // Use calibration data stored in info memory
-  bits30 = CALADC12_15V_30C;
-  bits85 = CALADC12_15V_85C;
-  degC_per_bit = ((float)(85.0 - 30.0))/((float)(bits85-bits30));
-}
-
 // Display date
 void displayDate(char* date, volatile long unsigned int globalTime, adc_month, adc_date) {
   const char* month_abbr[] = {
@@ -158,6 +134,30 @@ unsigned int read_launchpad_button() {
   return pressed;
 }
 
+// Config ADC12
+void config_ADC(degC_per_bit, bits30, bits85) {
+  //Set Port P8.0 (the slider) to digital I/O mode
+  P8OUT |= BIT0;
+
+  // TODO The ADC needs to read sequentially from the temp sensor, then the slider. It needs to read in from INCH_5 to a MCTL register with a VREF of 5V
+  REFCTL0 &= ~REFMSTR; // Reset REFMSTR to hand over control of
+  // internal reference voltages to
+  // ADC12_A control registers
+  ADC12CTL0 = ADC12SHT0_9 | ADC12REFON | ADC12ON; // Internal ref = 1.5V
+  ADC12CTL1 = ADC12SHP + ADC12CONSEQ_1; // Enable sample timer and set sequential mode
+  // Using ADC12MEM0 to store reading
+  ADC12MCTL0 = ADC12SREF_1 + ADC12INCH_10; // ADC i/p ch A10 = temp sense
+  // Slider stored in to MCTL1 5v reference VCC -> VSS
+  ADC12MCTL1 = ADC12SREF_0 + ADC12INCH_5 + ADC12EOS;
+  // ACD12SREF_1 = internal ref = 1.5v
+  __delay_cycles(100); // delay to allow Ref to settle
+  ADC12CTL0 |= ADC12ENC; // Enable conversion
+  // Use calibration data stored in info memory (1-time setup)
+  bits30 = CALADC12_15V_30C;
+  bits85 = CALADC12_15V_85C;
+  degC_per_bit = ((float)(85.0 - 30.0))/((float)(bits85-bits30));
+}
+
 // ADC 2 Time --> poopulate slider
 void ADC_2_Time(volatile unsigned int slider) {
   ADC12CTL0 &= ~ADC12SC; // clear the start bit
@@ -212,7 +212,7 @@ void set_user_leds(unsigned char uled)
 }
 
 // Initializes the buttons for input
-void init_buttons()
+void init_board_buttons()
 {
   // Set digital I/O mode for pins 3.6, 7.0, 7.4 and 2.2
   P3SEL &= ~BIT6;
@@ -233,7 +233,7 @@ void init_buttons()
   }
 
 //Reads the four buttons
-unsigned int read_buttons() {
+unsigned int read_board_buttons() {
   unsigned int pressed = 0;
   pressed |= BIT0 & ~(P7IN & BIT0);
   pressed |= BIT1 & ~((P3IN & BIT6) >> 5);
