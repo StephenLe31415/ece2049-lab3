@@ -12,12 +12,13 @@ void runtimerA2(void)
 
 // Display date
 void displayDate(char[7] date, volatile long unsigned int global_counter, volatile unsigned int adc_month, volatile unsigned int adc_date) {
-  const char* month_abbr[] = {
-  "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
+  const char* month_abbr[] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
   //Stores length of month to be used to decrement days later
   const int month_days[] = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
   unsigned int month = adc_month;
   unsigned int day = adc_date + (global_counter / 86400);
+
+  unsigned int month = adc_month;
 
   if (day > month_days[month - 1]) {
     day -= month_days[month - 1];
