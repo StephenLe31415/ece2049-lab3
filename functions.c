@@ -20,9 +20,10 @@ void displayDate(char date[7], volatile long unsigned int global_counter, volati
   if (date > month_days[adc_month - 1]) {
     date -= month_days[adc_month - 1];
     adc_month ++;
+    adc_date = 0;
     if (adc_month > 12) {
       adc_month = 1; // Restart for a new year --> doesn't need adc_month anymore
-      adc_date = 0; // Restart for a new year --> doesn't need adc_date anymore
+
     }
   }
 
