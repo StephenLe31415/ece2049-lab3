@@ -57,6 +57,7 @@ void main() {
   bits85 = CALADC12_15V_85C;
   degC_per_bit = ((float)(85.0 - 30.0))/((float)(bits85-bits30));
   /**************************************************************************** */
+  
   configDisplay();
   Graphics_clearDisplay(&g_sContext); // Clear the display
   runtimerA2(); // Start the A2 timer
