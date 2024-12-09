@@ -151,11 +151,11 @@ void config_ADC(volatile float degC_per_bit, volatile unsigned int bits30, volat
 // ADC 2 Time --> poopulate slider
 volatile unsigned int ADC_2_Time(void) {
   ADC12CTL0 &= ~ADC12SC; // clear the start bit
-  ADC12CTL0 |= ADC12SC; // Sampling and conversion start
+  ADC12CTL0 |= ADC12SC + ADC12ENC; // Sampling and conversion start
   // Single conversion (single channel)
   // Poll busy bit waiting for conversion to complete
   while (ADC12CTL1 & ADC12BUSY)
-  __no_operation();
+    __no_operation();
 
   volatile unsigned int slider = ADC12MEM1; // Set store the slider value in ADC12MEM1 in slider
   return slider;
@@ -163,7 +163,7 @@ volatile unsigned int ADC_2_Time(void) {
 
 volatile unsigned int ADC_2_Temp(void) {
   ADC12CTL0 &= ~ADC12SC; // clear the start bit
-  ADC12CTL0 |= ADC12SC; // Sampling and conversion start
+  ADC12CTL0 |= ADC12SC + ADC12ENC; // Sampling and conversion start
   // Single conversion (single channel)
   // Poll busy bit waiting for conversion to complete
   while (ADC12CTL1 & ADC12BUSY)
