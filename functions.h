@@ -2,6 +2,7 @@
 #include <msp430.h>
 #include <stdint.h>
 #include "peripherals.h"
+#define MOVING_AVERAGE_SIZE 36
 
 // Temperature Sensor Calibration = Reading at 30 degrees C is stored at addr 1A1Ah
 // See end of datasheet for TLV table memory mapping

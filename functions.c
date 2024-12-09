@@ -65,8 +65,7 @@ void displayTime(char disp_time[9], volatile long unsigned int global_counter, v
 
 // Display temp in C
 void displayTempC(char disp_c[7], volatile float temperatureDegC) {
-  temperatureDegC = temperatureDegC * 10;
-  unsigned int int_degC = (unsigned int)temperatureDegC;
+  unsigned int int_degC = (unsigned int)(temperatureDegC * 10);
   char c_tens = ((int_degC / 100) % 10) + '0';
   char c_ones = ((int_degC / 10) % 10) + '0';
   char c_tenths = (int_degC % 10) + '0';
@@ -81,8 +80,7 @@ void displayTempC(char disp_c[7], volatile float temperatureDegC) {
 
 // Display temp in F
 void displayTempF(char tempF[7], volatile float temperatureDegF) {
-  temperatureDegF = temperatureDegF * 10;
-  unsigned int int_degF = (unsigned int)temperatureDegF;
+  unsigned int int_degF = (unsigned int)(temperatureDegF * 10);
   char f_tens = ((int_degF / 100) % 10) + '0';
   char f_ones = ((int_degF / 10) % 10) + '0';
   char f_tenths = (int_degF % 10) + '0';

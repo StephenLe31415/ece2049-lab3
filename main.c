@@ -64,8 +64,15 @@ void main() {
   // Array for display functions.
   char date[7] = {0};
   char time[9] = {0};
-  char tempC[7] = {0};
-  char tempF[7] = {0};
+  char tempC_disp[7] = {0};
+  char tempF_disp[7] = {0};
+  // Array for the Moving Average
+  float val_tempC[MOVING_AVERAGE_SIZE] = {0.0};
+  float val_tempF[MOVING_AVERAGE_SIZE] = {0.0};
+  float sum_tempC = 0.0;
+  float sum_tempF = 0.0;
+  unsigned int index = 0;
+
   mode = DISPLAY; // Main  mode
   unsigned int user_input = read_launchpad_button(); // Read the User's Push-buttons
 
@@ -76,6 +83,17 @@ void main() {
           in_temp = ADC_2_Temp(); // ADC Conversion stuff:populate in_temp
           temperatureDegC = (float)((long)in_temp - CALADC12_15V_30C) * degC_per_bit +30.0;
           temperatureDegF = temperatureDegC * 9.0/5.0 + 32.0; // Temperature in Fahrenheit Tf = (9/5)*Tc + 32
+          index = global_counter % SIZE;
+          
+          // Moving-average logic
+          sum_tempC -= tempC[index]; // Remove the oldest readings
+          tempC[index] = temperatureDegC;
+          sum_tempC += temperatureDegC; // Add the newest readings
+
+          sum_tempF -= tempF[index];
+          tempF[index] = temperatureDegF;
+          sum_tempF += temperatureDegF;
+          
           // Display stuff
           Graphics_clearDisplay(&g_sContext);
           displayDate(date, global_counter, adc_month, adc_date);
@@ -84,11 +102,11 @@ void main() {
           displayTime(time, global_counter, adc_hour, adc_min, adc_sec);
           Graphics_drawStringCentered(&g_sContext, time, 9, 48, 35, TRANSPARENT_TEXT);
           
-          displayTempC(tempC, temperatureDegC);
-          Graphics_drawStringCentered(&g_sContext, tempC, 6, 48, 45, TRANSPARENT_TEXT);
+          displayTempC(tempC, (sum_tempC / MOVING_AVERAGE_SIZE));
+          Graphics_drawStringCentered(&g_sContext, tempC_disp, 6, 48, 45, TRANSPARENT_TEXT);
           
-          displayTempF(tempF, temperatureDegF);
-          Graphics_drawStringCentered(&g_sContext, tempF, 6, 48, 55, TRANSPARENT_TEXT);
+          displayTempF(tempF, (sum_tempF / MOVING_AVERAGE_SIZE));
+          Graphics_drawStringCentered(&g_sContext, tempF_disp, 6, 48, 55, TRANSPARENT_TEXT);
           Graphics_flushBuffer(&g_sContext);
         }
 
