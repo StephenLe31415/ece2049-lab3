@@ -27,9 +27,9 @@ void displayDate(char date[7], volatile long unsigned int global_counter, volati
 
   char day_tens = ((date - (date % 10)) / 10) + '0';
   char day_ones = (date % 10) + '0';
-  date[0] = month_abbr[adc_month][0];
-  date[1] = month_abbr[adc_month][1];
-  date[2] = month_abbr[adc_month][2];
+  date[0] = month_abbr[adc_month - 1][0];
+  date[1] = month_abbr[adc_month - 1][1];
+  date[2] = month_abbr[adc_month - 1][2];
   date[3] = ' ';
   date[4] = day_tens;
   date[5] = day_ones;
