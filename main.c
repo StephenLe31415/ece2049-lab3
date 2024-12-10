@@ -162,7 +162,6 @@ void main() {
             conversion_toggle = 1;
           }
         }
-      }
         mode = EDIT;
         break;
       }
