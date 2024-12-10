@@ -2,7 +2,7 @@
 
 // Globals
 volatile unsigned int in_temp = 0;
-volatile unsigned int slider = 0;
+volatile unsigned int scroll = 0;
 volatile unsigned int test_int = 0;
 volatile long unsigned int global_counter = 0; // Start at 00:00:00
 volatile float temperatureDegC = 0;
