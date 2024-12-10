@@ -199,21 +199,21 @@ void main() {
               
             // TODO: define the MACROS for these magic numbers: floor((4095 / # of segment) + 1) = magic number
             case 2: { // DATE
-              if (scroll_wheel >= 50 && increment_flag && adc_date != 28 && adc_month!= 2) {
+              if (scroll >= 50 && increment_flag && adc_date != 28 && adc_month!= 2) {
                 adc_date++;
                 Graphics_clearDisplay(&g_sContext);
                 displayDate(disp_date, 0, adc_month, adc_date); // "Month" and "Date" have been updated
                 Graphics_flushBuffer(&g_sContext);                
               }
 
-              if ((scroll_wheel >= 50) && (increment_flag) && (adc_date != 30) && (adc_month != 4) &&  (adc_month != 6) && (adc_month != 9) && (adc_month != 11)) {
+              if ((scroll >= 50) && (increment_flag) && (adc_date != 30) && (adc_month != 4) &&  (adc_month != 6) && (adc_month != 9) && (adc_month != 11)) {
                 adc_date++;
                 Graphics_clearDisplay(&g_sContext);
                 displayDate(disp_date, 0, adc_month, adc_date); // "Month" and "Date" have been updated
                 Graphics_flushBuffer(&g_sContext);
               }
 
-              if ((scroll_wheel >= 50) && (increment_flag) && (adc_date != 31)) {
+              if ((scroll >= 50) && (increment_flag) && (adc_date != 31)) {
                 adc_date++;
                 Graphics_clearDisplay(&g_sContext);
                 displayDate(disp_date, 0, adc_month, adc_date); // "Month" and "Date" have been updated
