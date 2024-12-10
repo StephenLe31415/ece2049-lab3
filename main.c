@@ -39,10 +39,10 @@ void main() {
   // config_ADC(degC_per_bit, bits30, bits85); // Config the ADC12
 
   /*************************Testing ONLY******************************** */
-  //Set up Port P8.0 (the slider) to digital I/O mode
-  P8SEL &= ~BIT0;
-  P8DIR |= BIT0;
-  P8OUT |= BIT0;
+  //Set up Port P6.0 (the slider) to digital I/O mode
+  P6SEL &= ~BIT0;
+  P6DIR |= BIT0;
+  P6OUT |= BIT0;
   // TODO The ADC needs to read sequentially from the temp sensor, then the slider. It needs to read in from INCH_5 to a MCTL register with a VREF of 5V
   REFCTL0 &= ~REFMSTR; // Reset REFMSTR to hand over control of
   // internal reference voltages to
@@ -52,7 +52,7 @@ void main() {
   // Using ADC12MEM0 to store reading
   ADC12MCTL0 = ADC12SREF_1 + ADC12INCH_10; // ADC i/p ch A10 = temp sense
   // Slider stored in to MCTL1 5v reference VCC -> VSS
-  ADC12MCTL1 = ADC12SREF_0 + ADC12INCH_5 + ADC12EOS;
+  ADC12MCTL1 = ADC12SREF_0 + ADC12INCH_0 + ADC12EOS;
   // ACD12SREF_1 = internal ref = 1.5v
   __delay_cycles(100); // delay to allow Ref to settle
   ADC12CTL0 |= ADC12ENC; // Enable conversion
