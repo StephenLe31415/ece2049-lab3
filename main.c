@@ -169,12 +169,10 @@ void main() {
 
       case EDIT: {
         unsigned int num_pressed = 0;
-        long unsigned int temp_counter = 0;
-        while (user_input == 0 && temp_counter == global_counter) {
-          user_input = read_launchpad_button();
-          num_pressed = num_pressed + user_input;
-        }
         while (user_input != 2) { // Only right button triggers
+          long unsigned int temp_counter = global_counter;
+          while (user_input == 0 && temp_counter == global_counter)
+            user_input = read_launchpad_button();
           num_pressed += (user_input % 5); // Wrap around "Month - Date - Hour - Min - Sec" logic
           // Traversing logic
           switch (num_pressed) {
