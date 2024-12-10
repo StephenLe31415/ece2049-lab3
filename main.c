@@ -153,7 +153,7 @@ void main() {
           }
             user_input = 0;
             while (user_input == 0)
-              user_input = read_launchpad_button;
+              user_input = read_launchpad_button();
         }
         }
         mode = EDIT;
