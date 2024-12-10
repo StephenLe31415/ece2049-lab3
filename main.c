@@ -18,12 +18,14 @@ volatile state mode;
 volatile int display_toggle = 0;
 volatile int conversion_toggle = 0;
 volatile int increment_flag = 0;
+volatile int key_toggle = 0;
 #pragma vector=TIMER2_A0_VECTOR //What does this do? No one knows...
 __interrupt void timer_a2() {
   global_counter++;
   display_toggle = 0;
   conversion_toggle = 0;
   increment_flag = 1;
+  key_toggle = 1;
   // ADC Converstion Stuff
   ADC12CTL0 &= ~ADC12SC; // clear the start bit
   ADC12CTL0 |= ADC12SC + ADC12ENC; // Sampling and conversion start
@@ -174,8 +176,10 @@ void main() {
         while (user_input != 2) { // Only right button triggers
           long unsigned int temp_counter = global_counter;
           user_input = 0;
-          while (user_input == 0 && temp_counter == global_counter)
+          
+          while (user_input == 0 && key_toggle && temp_counter == global_counter)
             user_input = read_launchpad_button();
+            key_toggle = 0;
           num_pressed = (num_pressed + user_input) % 5; // Wrap around "Month - Date - Hour - Min - Sec" logic
           // Traversing logic
           switch (num_pressed) {
