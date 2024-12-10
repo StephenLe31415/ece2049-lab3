@@ -3,6 +3,7 @@
 // Globals
 volatile unsigned int in_temp = 0;
 volatile unsigned int slider = 0;
+volatile unsigned int test_int = 0;
 volatile long unsigned int global_counter = 0; // Start at 00:00:00
 volatile float temperatureDegC = 0;
 volatile float temperatureDegF = 0;
@@ -77,8 +78,6 @@ void main() {
   float sum_tempC = 0.0;
   float sum_tempF = 0.0;
   unsigned int index = 0;
-  volatile unsigned int in_temp = 0;
-  volatile unsigned int slider = 0;
   mode = DISPLAY; // Main  mode
   // TODO: Test read_launchpad_button() (weird behavior and output)
   unsigned int user_input = read_launchpad_button(); // Read the User's Push-buttons
