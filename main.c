@@ -57,7 +57,7 @@ void main() {
   bits85 = CALADC12_15V_85C;
   degC_per_bit = ((float)(85.0 - 30.0))/((float)(bits85-bits30));
   /**************************************************************************** */
-  
+
   configDisplay();
   init_launchpad_button();
   Graphics_clearDisplay(&g_sContext); // Clear the display
@@ -83,7 +83,7 @@ void main() {
       // ADC Converstion Stuff
       ADC12CTL0 &= ~ADC12SC; // clear the start bit
       ADC12CTL0 |= ADC12SC + ADC12ENC; // Sampling and conversion start
-      // Single conversion (single channel)  
+      // Single conversion (single channel)
       while (ADC12CTL1 & ADC12BUSY) // Poll busy bit waiting for conversion to complete
         __no_operation();
       volatile unsigned int in_temp = ADC12MEM0;
@@ -93,8 +93,8 @@ void main() {
         while(user_input == 0 | user_input == 2) { // Only left button triggers
           temperatureDegC = (float)((long)in_temp - CALADC12_15V_30C) * degC_per_bit +30.0;
           temperatureDegF = temperatureDegC * 9.0/5.0 + 32.0; // Temperature in Fahrenheit Tf = (9/5)*Tc + 32
-          index = global_counter % SIZE;
-          
+          index = global_counter % MOVING_AVERAGE_SIZE;
+
           // Moving-average logic
           sum_tempC -= val_tempC[index]; // Remove the oldest readings
           val_tempC[index] = temperatureDegC;
@@ -103,11 +103,11 @@ void main() {
           sum_tempF -= val_tempF[index];
           val_tempF[index] = temperatureDegF;
           sum_tempF += temperatureDegF;
-          
+
           // Display stuff
           Graphics_clearDisplay(&g_sContext);
-          displayDate(disp_date, global_counter, adc_month, adc_date); 
-          displayTime(dips_time, global_counter, adc_hour, adc_min, adc_sec);
+          displayDate(disp_date, global_counter, adc_month, adc_date);
+          displayTime(disp_time, global_counter, adc_hour, adc_min, adc_sec);
           displayTempC(disp_tempC, (sum_tempC / MOVING_AVERAGE_SIZE));
           displayTempF(disp_tempF, (sum_tempF / MOVING_AVERAGE_SIZE));
           Graphics_flushBuffer(&g_sContext);
@@ -128,7 +128,7 @@ void main() {
               Graphics_clearDisplay(&g_sContext);
               displayDate(disp_date, 0, adc_month, adc_date); // "Date" has not been updated yet.
               Graphics_flushBuffer(&g_sContext);
-              break;    
+              break;
             }
             // TODO: define the MACROS for these magic numbers: floor((4095 / # of segment) + 1) = magic number
             case 1: { // DATE
@@ -138,18 +138,18 @@ void main() {
                 adc_date = 1 + (unsigned int)(slider / 137); // 30 days
               } else {
                 adc_date = 1 + (unsigned int)(slider / 133); // 31 days
-              } 
+              }
               Graphics_clearDisplay(&g_sContext);
               displayDate(disp_date, 0, adc_month, adc_date); // "Month" and "Date" have been updated
-              Graphics_flushBuffer(&g_sContext); 
-              break; 
+              Graphics_flushBuffer(&g_sContext);
+              break;
             }
 
             case 2: { // HOUR
               adc_hour = (unsigned int)(slider / 171); // 24 hours
               Graphics_clearDisplay(&g_sContext);
               displayTime(disp_time, 0, adc_hour, adc_min, adc_sec); // "Min" and "Sec" have not been updated --> use the previous values stored.
-              Graphics_flushBuffer(&g_sContext); 
+              Graphics_flushBuffer(&g_sContext);
               break;
             }
 
@@ -157,7 +157,7 @@ void main() {
               adc_min = (unsigned int)(slider / 69); // 60 mins
               Graphics_clearDisplay(&g_sContext);
               displayTime(disp_time, 0, adc_hour, adc_min, adc_sec); // "Hour" has been updated. "Sec" has not been updated
-              Graphics_flushBuffer(&g_sContext); 
+              Graphics_flushBuffer(&g_sContext);
               break;
             }
 
@@ -166,7 +166,7 @@ void main() {
               Graphics_clearDisplay(&g_sContext);
               displayTime(disp_time, 0, adc_hour, adc_min, adc_sec); // Every param has been updated.
               Graphics_flushBuffer(&g_sContext);
-              break;    
+              break;
             }
           } // End of switch num_pressed
         } // End of while loop
