@@ -178,7 +178,7 @@ void main() {
           // Traversing logic
           switch (num_pressed) {
             case 1: { //MONTH
-              adc_month = 1 + (unsigned int)(slider / ONE_MONTH_IN_ADC);
+              adc_month = 1 + (unsigned int)(in_temp / ONE_MONTH_IN_ADC);
               Graphics_clearDisplay(&g_sContext);
               displayDate(disp_date, 0, adc_month, adc_date); // "Date" has not been updated yet.
               Graphics_flushBuffer(&g_sContext);
@@ -187,11 +187,11 @@ void main() {
             // TODO: define the MACROS for these magic numbers: floor((4095 / # of segment) + 1) = magic number
             case 2: { // DATE
               if (adc_month == 2) {
-                adc_date = 1 + (unsigned int)(slider / 147); // 28 days
+                adc_date = 1 + (unsigned int)(in_temp / 147); // 28 days
               } else if ((adc_month == 4) &&  (adc_month == 6) && (adc_month == 9) && (adc_month == 11)) {
-                adc_date = 1 + (unsigned int)(slider / 137); // 30 days
+                adc_date = 1 + (unsigned int)(in_temp / 137); // 30 days
               } else {
-                adc_date = 1 + (unsigned int)(slider / 133); // 31 days
+                adc_date = 1 + (unsigned int)(in_temp / 133); // 31 days
               }
               Graphics_clearDisplay(&g_sContext);
               displayDate(disp_date, 0, adc_month, adc_date); // "Month" and "Date" have been updated
@@ -200,7 +200,7 @@ void main() {
             }
 
             case 3: { // HOUR
-              adc_hour = (unsigned int)(slider / 171); // 24 hours
+              adc_hour = (unsigned int)(in_temp / 171); // 24 hours
               Graphics_clearDisplay(&g_sContext);
               displayTime(disp_time, 0, adc_hour, adc_min, adc_sec); // "Min" and "Sec" have not been updated --> use the previous values stored.
               Graphics_flushBuffer(&g_sContext);
@@ -208,7 +208,7 @@ void main() {
             }
 
             case 4: { // MIN
-              adc_min = (unsigned int)(slider / 69); // 60 mins
+              adc_min = (unsigned int)(in_temp / 69); // 60 mins
               Graphics_clearDisplay(&g_sContext);
               displayTime(disp_time, 0, adc_hour, adc_min, adc_sec); // "Hour" has been updated. "Sec" has not been updated
               Graphics_flushBuffer(&g_sContext);
@@ -216,7 +216,7 @@ void main() {
             }
 
             case 0: { // SEC
-              adc_sec = (unsigned int)(slider / 69); // 60 secs
+              adc_sec = (unsigned int)(in_temp / 69); // 60 secs
               Graphics_clearDisplay(&g_sContext);
               displayTime(disp_time, 0, adc_hour, adc_min, adc_sec); // Every param has been updated.
               Graphics_flushBuffer(&g_sContext);
