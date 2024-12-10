@@ -181,13 +181,14 @@ void main() {
           switch (num_pressed) {
             case 1: { //MONTH
               // adc_month = 1 + (unsigned int)((scroll - 21) / 3);
+              // New logic
               if (scroll >= 50 && !increment_flag && adc_month != 12) {
                 adc_month++;
                 Graphics_clearDisplay(&g_sContext);
                 displayDate(disp_date, 0, adc_month, adc_date); // "Date" has not been updated yet.
                 Graphics_flushBuffer(&g_sContext);
               }
-
+      
               if (scroll <=30 && !increment_flag && adc_month != 1) {
                 adc_month--;
                 Graphics_clearDisplay(&g_sContext);
