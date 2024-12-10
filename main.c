@@ -119,8 +119,8 @@ void main() {
 
       case EDIT: {
         unsigned int num_pressed = 0;
-        while (user_input == 0 | user_input == 1) { // Only right button triggers
-          num_pressed += (read_launchpad_button() % 5); // Wrap around "Month - Date - Hour - Min - Sec" logic
+        while (user_input != 2) { // Only right button triggers
+          num_pressed += (user_input % 5); // Wrap around "Month - Date - Hour - Min - Sec" logic
           // Traversing logic
           switch (num_pressed) {
             case 0: { //MONTH
