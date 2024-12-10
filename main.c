@@ -178,7 +178,7 @@ void main() {
           // Traversing logic
           switch (num_pressed) {
             case 1: { //MONTH
-              adc_month = 1 + (unsigned int)((in_temp - 29) / 3);
+              adc_month = 1 + (unsigned int)((in_temp - 21) / 3);
               Graphics_clearDisplay(&g_sContext);
               displayDate(disp_date, 0, adc_month, adc_date); // "Date" has not been updated yet.
               Graphics_flushBuffer(&g_sContext);
