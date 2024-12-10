@@ -17,11 +17,13 @@ volatile unsigned int bits30, bits85;
 volatile state mode;
 volatile int display_toggle = 0;
 volatile int conversion_toggle = 0;
+volatile int increment_flag = 0;
 #pragma vector=TIMER2_A0_VECTOR //What does this do? No one knows...
 __interrupt void timer_a2() {
   global_counter++;
   display_toggle = 0;
   conversion_toggle = 0;
+  increment_flag = 0;
   // ADC Converstion Stuff
   ADC12CTL0 &= ~ADC12SC; // clear the start bit
   ADC12CTL0 |= ADC12SC + ADC12ENC; // Sampling and conversion start
@@ -178,12 +180,25 @@ void main() {
           // Traversing logic
           switch (num_pressed) {
             case 1: { //MONTH
-              adc_month = 1 + (unsigned int)((scroll - 21) / 3);
-              Graphics_clearDisplay(&g_sContext);
-              displayDate(disp_date, 0, adc_month, adc_date); // "Date" has not been updated yet.
-              Graphics_flushBuffer(&g_sContext);
+              // adc_month = 1 + (unsigned int)((scroll - 21) / 3);
+              // New logic
+              if (scroll >= 50 && !increment_flag && adc_month != 12) {
+                adc_month++;
+                Graphics_clearDisplay(&g_sContext);
+                displayDate(disp_date, 0, adc_month, adc_date); // "Date" has not been updated yet.
+                Graphics_flushBuffer(&g_sContext);
+              }
+      
+              if (scroll <=30 && !increment_flag && adc_month != 1) {
+                adc_month--;
+                Graphics_clearDisplay(&g_sContext);
+                displayDate(disp_date, 0, adc_month, adc_date); // "Date" has not been updated yet.
+                Graphics_flushBuffer(&g_sContext);
+              }
+              increment_flag = 1;
               break;
             }
+              
             // TODO: define the MACROS for these magic numbers: floor((4095 / # of segment) + 1) = magic number
             case 2: { // DATE
               if (adc_month == 2) {
