@@ -17,7 +17,7 @@ volatile unsigned int bits30, bits85;
 volatile state mode;
 volatile int display_toggle = 0;
 volatile int conversion_toggle = 0;
-volatile int increment_flag = 1;
+volatile int increment_flag = 0;
 #pragma vector=TIMER2_A0_VECTOR //What does this do? No one knows...
 __interrupt void timer_a2() {
   global_counter++;
