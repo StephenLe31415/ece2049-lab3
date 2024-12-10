@@ -75,23 +75,15 @@ void main() {
   float sum_tempC = 0.0;
   float sum_tempF = 0.0;
   unsigned int index = 0;
-
+  volatile unsigned int in_temp = 0;
+  volatile unsigned int slider = 0;
   mode = DISPLAY; // Main  mode
   // TODO: Test read_launchpad_button() (weird behavior and output)
   unsigned int user_input = read_launchpad_button(); // Read the User's Push-buttons
 
   while (1) {
     switch(mode) {
-      // ADC Converstion Stuff
-      ADC12CTL0 &= ~ADC12SC; // clear the start bit
-      ADC12CTL0 |= ADC12SC + ADC12ENC; // Sampling and conversion start
-      // Single conversion (single channel)
-      while (ADC12CTL1 & ADC12BUSY) // Poll busy bit waiting for conversion to complete
-        __no_operation();
-      volatile unsigned int in_temp = ADC12MEM0;
-      volatile unsigned int slider = ADC12MEM1; // Set store the slider value in ADC12MEM1 in slider
-
-      case DISPLAY: {
+    case DISPLAY: {
         while(user_input == 0 | user_input == 2) { // Only left button triggers
           // Display stuff
           if (display_toggle == 0) {
@@ -105,6 +97,15 @@ void main() {
           }
 
           if (conversion_toggle == 0) {
+            // ADC Converstion Stuff
+            ADC12CTL0 &= ~ADC12SC; // clear the start bit
+            ADC12CTL0 |= ADC12SC + ADC12ENC; // Sampling and conversion start
+            // Single conversion (single channel)
+            while (ADC12CTL1 & ADC12BUSY) // Poll busy bit waiting for conversion to complete
+              __no_operation();
+            in_temp = ADC12MEM0;
+            slider = ADC12MEM1; // Set store the slider value in ADC12MEM1 in slider
+
             temperatureDegC = (float)((long)in_temp - CALADC12_15V_30C) * degC_per_bit +30.0;
             temperatureDegF = temperatureDegC * 9.0/5.0 + 32.0; // Temperature in Fahrenheit Tf = (9/5)*Tc + 32
             index = global_counter % MOVING_AVERAGE_SIZE;
