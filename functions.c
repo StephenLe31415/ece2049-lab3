@@ -9,8 +9,12 @@ void runtimerA2(void) {
   TA2CCTL0 = CCIE;
 }
 
+// Note on displayDate and displayTime
+// 1. Wrap around on Dec 31, 23:59:59
+// 2. Starts on Jan 01, 00:00:00
+// 3. Keeps counting from a given date and time (adc_<quantity>)
 // Display date
-void displayDate(char date[7], volatile long unsigned int global_counter, volatile unsigned int adc_month, volatile unsigned int adc_date) {
+void displayDate(char disp_date[7], volatile long unsigned int global_counter, volatile unsigned int adc_month, volatile unsigned int adc_date) {
   const char* month_abbr[12] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
   //Stores length of month to be used to decrement days later
   const int month_days[12] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
@@ -20,10 +24,9 @@ void displayDate(char date[7], volatile long unsigned int global_counter, volati
   if (date > month_days[adc_month - 1]) {
     date -= month_days[adc_month - 1];
     adc_month ++;
-    adc_date = 0;
+    adc_date = 0; // Restart for a new month --> doesn't need adc_date anymore
     if (adc_month > 12) {
       adc_month = 1; // Restart for a new year --> doesn't need adc_month anymore
-
     }
   }
 
@@ -36,11 +39,10 @@ void displayDate(char date[7], volatile long unsigned int global_counter, volati
   date[4] = day_tens;
   date[5] = day_ones;
   date[6] = '\0';
+
+  Graphics_drawStringCentered(&g_sContext, disp_date, 7, 48, 15, TRANSPARENT_TEXT);
 }
 
-//TODO: modify the display functions so it increases based off a pre-determined months, date, etc.
-// Default: Jan 1, 00:00:00
-// Rewrite displayTime so it loops back after Dec 31 - 23:59:59
 // Display time
 void displayTime(char disp_time[9], volatile long unsigned int global_counter, volatile unsigned int adc_hour, volatile unsigned int adc_min, volatile unsigned int adc_sec) {
   unsigned int hours =  (adc_hour + (global_counter / 3600)) % 24;
@@ -62,6 +64,8 @@ void displayTime(char disp_time[9], volatile long unsigned int global_counter, v
   disp_time[6] = seconds_tens;
   disp_time[7] = seconds_ones;
   disp_time[8] = '\0';
+
+  Graphics_drawStringCentered(&g_sContext, disp_time, 9, 48, 35, TRANSPARENT_TEXT);
 }
 
 // Display temp in C
@@ -77,6 +81,8 @@ void displayTempC(char disp_c[7], volatile float temperatureDegC) {
   disp_c[3] = c_tenths;
   disp_c[4] = ' ';
   disp_c[5] = 'C';
+
+  Graphics_drawStringCentered(&g_sContext, disp_c, 6, 48, 45, TRANSPARENT_TEXT);
 }
 
 // Display temp in F
@@ -92,6 +98,8 @@ void displayTempF(char tempF[7], volatile float temperatureDegF) {
   tempF[3] = f_tenths;
   tempF[4] = ' ';
   tempF[5] = 'F';
+
+  Graphics_drawStringCentered(&g_sContext, disp_tempF, 6, 48, 55, TRANSPARENT_TEXT);
 }
 
 
@@ -148,87 +156,64 @@ void config_ADC(volatile float degC_per_bit, volatile unsigned int bits30, volat
   degC_per_bit = ((float)(85.0 - 30.0))/((float)(bits85-bits30));
 }
 
-// ADC 2 Time --> poopulate slider
-volatile unsigned int ADC_2_Time(void) {
-  ADC12CTL0 &= ~ADC12SC; // clear the start bit
-  ADC12CTL0 |= ADC12SC + ADC12ENC; // Sampling and conversion start
-  // Single conversion (single channel)
-  // Poll busy bit waiting for conversion to complete
-  while (ADC12CTL1 & ADC12BUSY)
-    __no_operation();
-
-  volatile unsigned int slider = ADC12MEM1; // Set store the slider value in ADC12MEM1 in slider
-  return slider;
-}
-
-volatile unsigned int ADC_2_Temp(void) {
-  ADC12CTL0 &= ~ADC12SC; // clear the start bit
-  ADC12CTL0 |= ADC12SC + ADC12ENC; // Sampling and conversion start
-  // Single conversion (single channel)
-  // Poll busy bit waiting for conversion to complete
-  while (ADC12CTL1 & ADC12BUSY)
-    __no_operation();
-  // Temp sensor stuff
-  volatile unsigned int in_temp = ADC12MEM0; // Read in results if conversion
-  return in_temp;
-}
-
 /***************************************************************************************************************************************** */
-// Initializes the two user LEDs
-void init_user_leds()
-{
-  //Set digital I/O mode for pins 1.0 and 4.7
-  P4SEL &= ~BIT7;
-  P1SEL &= ~BIT0;
-  //Set the same pins as outputs
-  P4DIR |= BIT7;
-  P1DIR |= BIT0;
-}
+// TODO: clean up before submission
 
-//Sets the two user LEDs
-void set_user_leds(unsigned char uled)
-{
-  //zero outputs
-  P4OUT &= ~BIT7;
-  P1OUT &= ~BIT0;
-  //set outputs
-  if (uled == 1)
-    P4OUT |= BIT7;
-  else if (uled == 2)
-    P1OUT |= BIT0;
-  else if (uled == 3) {
-    P4OUT |= BIT7;
-    P1OUT |= BIT0;
-  }
-}
+// // Initializes the two user LEDs
+// void init_user_leds()
+// {
+//   //Set digital I/O mode for pins 1.0 and 4.7
+//   P4SEL &= ~BIT7;
+//   P1SEL &= ~BIT0;
+//   //Set the same pins as outputs
+//   P4DIR |= BIT7;
+//   P1DIR |= BIT0;
+// }
 
-// Initializes the buttons for input
-void init_board_buttons()
-{
-  // Set digital I/O mode for pins 3.6, 7.0, 7.4 and 2.2
-  P3SEL &= ~BIT6;
-  P7SEL &= ~(BIT4|BIT0);
-  P2SEL &= ~BIT2;
-  // Set the same pins as inputs
-  P3DIR &= ~BIT6;
-  P7DIR &= ~(BIT4|BIT0);
-  P2DIR &= ~BIT2;
-  // Set pull resistors on the pins
-  P3REN |= BIT6;
-  P7REN |= (BIT4|BIT0);
-  P2REN |= BIT2;
-  // Set them to be pull-up resistors
-  P3OUT |= BIT6;
-  P7OUT |= (BIT4|BIT0);
-  P2OUT |= BIT2;
-  }
+// //Sets the two user LEDs
+// void set_user_leds(unsigned char uled)
+// {
+//   //zero outputs
+//   P4OUT &= ~BIT7;
+//   P1OUT &= ~BIT0;
+//   //set outputs
+//   if (uled == 1)
+//     P4OUT |= BIT7;
+//   else if (uled == 2)
+//     P1OUT |= BIT0;
+//   else if (uled == 3) {
+//     P4OUT |= BIT7;
+//     P1OUT |= BIT0;
+//   }
+// }
 
-//Reads the four buttons
-unsigned int read_board_buttons() {
-  unsigned int pressed = 0;
-  pressed |= BIT0 & ~(P7IN & BIT0);
-  pressed |= BIT1 & ~((P3IN & BIT6) >> 5);
-  pressed |= BIT2 & ~(P2IN & BIT2);
-  pressed |= BIT3 & ~((P7IN & BIT4) >> 1);
-  return pressed;
-}
+// // Initializes the buttons for input
+// void init_board_buttons()
+// {
+//   // Set digital I/O mode for pins 3.6, 7.0, 7.4 and 2.2
+//   P3SEL &= ~BIT6;
+//   P7SEL &= ~(BIT4|BIT0);
+//   P2SEL &= ~BIT2;
+//   // Set the same pins as inputs
+//   P3DIR &= ~BIT6;
+//   P7DIR &= ~(BIT4|BIT0);
+//   P2DIR &= ~BIT2;
+//   // Set pull resistors on the pins
+//   P3REN |= BIT6;
+//   P7REN |= (BIT4|BIT0);
+//   P2REN |= BIT2;
+//   // Set them to be pull-up resistors
+//   P3OUT |= BIT6;
+//   P7OUT |= (BIT4|BIT0);
+//   P2OUT |= BIT2;
+//   }
+
+// //Reads the four buttons
+// unsigned int read_board_buttons() {
+//   unsigned int pressed = 0;
+//   pressed |= BIT0 & ~(P7IN & BIT0);
+//   pressed |= BIT1 & ~((P3IN & BIT6) >> 5);
+//   pressed |= BIT2 & ~(P2IN & BIT2);
+//   pressed |= BIT3 & ~((P7IN & BIT4) >> 1);
+//   return pressed;
+// }

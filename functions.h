@@ -2,7 +2,6 @@
 #include <msp430.h>
 #include <stdint.h>
 #include "peripherals.h"
-#define MOVING_AVERAGE_SIZE 36
 
 // Temperature Sensor Calibration = Reading at 30 degrees C is stored at addr 1A1Ah
 // See end of datasheet for TLV table memory mapping
@@ -10,15 +9,16 @@
 // Temperature Sensor Calibration = Reading at 85 degrees C is stored at addr 1A1Ch
 //See device datasheet for TLV table memory mapping
 #define CALADC12_15V_85C *((unsigned int *)0x1A1C)
-#define ONE_MONTH_IN_ADC 342 // 12 segments from 0 --> 2045
+#define MOVING_AVERAGE_SIZE 36
+#define ONE_MONTH_IN_ADC 342 // 12 segments from 0 --> 4095
 
-// Enum for the game state
+// Enum for the program state
 typedef enum {
   DISPLAY,
   EDIT,
 } state;
 
-// Rin Timer A2
+// Run Timer A2
 void runtimerA2(void);
 
 // Display functions
@@ -38,12 +38,6 @@ void displayTempF(char tempF[7], volatile float);
 // Configure the ADC12
 void config_ADC(volatile float, volatile unsigned int, volatile unsigned int);
 
-// Convert ADC 2 Time --> Populate slider
-volatile unsigned int ADC_2_Time(void);
-
-// Convert ADC 2 Temp --> Populate in_temp
-volatile unsigned int ADC_2_Temp(void);
-
 // Buttons functions
 // Init user's launchpad buttons
 void init_launchpad_button();
@@ -55,15 +49,15 @@ unsigned int read_launchpad_button();
 
 
 
+// TODO: clean up before submission
+// // Initializes the two user LEDs
+// void init_user_leds();
 
-// Initializes the two user LEDs
-void init_user_leds();
+// //Sets the two user LEDs
+// void set_user_leds(unsigned char uled);
 
-//Sets the two user LEDs
-void set_user_leds(unsigned char uled);
+// // Initializes the buttons for input
+// void init_board_buttons();
 
-// Initializes the buttons for input
-void init_board_buttons();
-
-//Reads the four buttons
-unsigned int read_board_buttons();
+// //Reads the four buttons
+// unsigned int read_board_buttons();

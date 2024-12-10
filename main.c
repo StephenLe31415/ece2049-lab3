@@ -3,12 +3,12 @@
 // Globals
 volatile unsigned int in_temp = 0;
 volatile unsigned int slider = 0;
-volatile long unsigned int global_counter = 16416000;
+volatile long unsigned int global_counter = 0; // Start at 00:00:00
 volatile float temperatureDegC = 0;
 volatile float temperatureDegF = 0;
 volatile float degC_per_bit = 0;
-volatile unsigned int adc_month = 1;
-volatile unsigned int adc_date = 1;
+volatile unsigned int adc_month = 1; // Start on Jan
+volatile unsigned int adc_date = 1; // Start on day 1
 volatile unsigned int adc_hour = 0;
 volatile unsigned int adc_min = 0;
 volatile unsigned int adc_sec = 0;
@@ -62,10 +62,10 @@ void main() {
   Graphics_clearDisplay(&g_sContext); // Clear the display
   runtimerA2(); // Start the A2 timer
   // Array for display functions.
-  char date[7] = {0};
-  char time[9] = {0};
-  char tempC_disp[7] = {0};
-  char tempF_disp[7] = {0};
+  char disp_date[7] = {0};
+  char disp_time[9] = {0};
+  char disp_tempC[7] = {0};
+  char disp_tempF[7] = {0};
   // Array for the Moving Average
   float val_tempC[MOVING_AVERAGE_SIZE] = {0.0};
   float val_tempF[MOVING_AVERAGE_SIZE] = {0.0};
@@ -74,39 +74,41 @@ void main() {
   unsigned int index = 0;
 
   mode = DISPLAY; // Main  mode
+  // TODO: Test read_launchpad_button() (weird behavior and output)
   unsigned int user_input = read_launchpad_button(); // Read the User's Push-buttons
 
   while (1) {
     switch(mode) {
+      // ADC Converstion Stuff
+      ADC12CTL0 &= ~ADC12SC; // clear the start bit
+      ADC12CTL0 |= ADC12SC + ADC12ENC; // Sampling and conversion start
+      // Single conversion (single channel)  
+      while (ADC12CTL1 & ADC12BUSY) // Poll busy bit waiting for conversion to complete
+        __no_operation();
+      volatile unsigned int in_temp = ADC12MEM0;
+      volatile unsigned int slider = ADC12MEM1; // Set store the slider value in ADC12MEM1 in slider
+
       case DISPLAY: {
-        while(user_input != 1) { // Left button
-          in_temp = ADC_2_Temp(); // ADC Conversion stuff:populate in_temp
+        while(user_input == 0 | user_input == 2) { // Only left button triggers
           temperatureDegC = (float)((long)in_temp - CALADC12_15V_30C) * degC_per_bit +30.0;
           temperatureDegF = temperatureDegC * 9.0/5.0 + 32.0; // Temperature in Fahrenheit Tf = (9/5)*Tc + 32
           index = global_counter % SIZE;
           
           // Moving-average logic
-          sum_tempC -= tempC[index]; // Remove the oldest readings
-          tempC[index] = temperatureDegC;
+          sum_tempC -= val_tempC[index]; // Remove the oldest readings
+          val_tempC[index] = temperatureDegC;
           sum_tempC += temperatureDegC; // Add the newest readings
 
-          sum_tempF -= tempF[index];
-          tempF[index] = temperatureDegF;
+          sum_tempF -= val_tempF[index];
+          val_tempF[index] = temperatureDegF;
           sum_tempF += temperatureDegF;
           
           // Display stuff
           Graphics_clearDisplay(&g_sContext);
-          displayDate(date, global_counter, adc_month, adc_date);
-          Graphics_drawStringCentered(&g_sContext, date, 7, 48, 15, TRANSPARENT_TEXT);
-          
-          displayTime(time, global_counter, adc_hour, adc_min, adc_sec);
-          Graphics_drawStringCentered(&g_sContext, time, 9, 48, 35, TRANSPARENT_TEXT);
-          
-          displayTempC(tempC, (sum_tempC / MOVING_AVERAGE_SIZE));
-          Graphics_drawStringCentered(&g_sContext, tempC_disp, 6, 48, 45, TRANSPARENT_TEXT);
-          
-          displayTempF(tempF, (sum_tempF / MOVING_AVERAGE_SIZE));
-          Graphics_drawStringCentered(&g_sContext, tempF_disp, 6, 48, 55, TRANSPARENT_TEXT);
+          displayDate(disp_date, global_counter, adc_month, adc_date); 
+          displayTime(dips_time, global_counter, adc_hour, adc_min, adc_sec);
+          displayTempC(disp_tempC, (sum_tempC / MOVING_AVERAGE_SIZE));
+          displayTempF(disp_tempF, (sum_tempF / MOVING_AVERAGE_SIZE));
           Graphics_flushBuffer(&g_sContext);
         }
 
@@ -116,53 +118,52 @@ void main() {
 
       case EDIT: {
         unsigned int num_pressed = 0;
-        while (user_input != 2) { // Right button
-          slider = ADC_2_Time(); // ADC Conversion stuff: populate slider
-          num_pressed += (read_launchpad_button() % 5); // Wrap around to "Month" logic
+        while (user_input == 0 | user_input == 1) { // Only right button triggers
+          num_pressed += (read_launchpad_button() % 5); // Wrap around "Month - Date - Hour - Min - Sec" logic
           // Traversing logic
           switch (num_pressed) {
             case 0: { //MONTH
-              adc_month = 1 + (volatile unsigned int)(slider / ONE_MONTH_IN_ADC);
+              adc_month = 1 + (unsigned int)(slider / ONE_MONTH_IN_ADC);
               Graphics_clearDisplay(&g_sContext);
-              displayDate(date, 0, adc_month, adc_date); // "Date" has not been updated yet.
+              displayDate(disp_date, 0, adc_month, adc_date); // "Date" has not been updated yet.
               Graphics_flushBuffer(&g_sContext);
               break;    
             }
-
+            // TODO: define the MACROS for these magic numbers: floor((4095 / # of segment) + 1) = magic number
             case 1: { // DATE
               if (adc_month == 2) {
-                adc_date = 1 + (volatile unsigned int)(slider / 147);
+                adc_date = 1 + (unsigned int)(slider / 147); // 28 days
               } else if ((adc_month == 4) &&  (adc_month == 6) && (adc_month == 9) && (adc_month == 11)) {
-                adc_date = 1 + (volatile unsigned int)(slider / 137);
+                adc_date = 1 + (unsigned int)(slider / 137); // 30 days
               } else {
-                adc_date = 1 + (volatile unsigned int)(slider / 133);
+                adc_date = 1 + (unsigned int)(slider / 133); // 31 days
               } 
               Graphics_clearDisplay(&g_sContext);
-              displayDate(date, 0, adc_month, adc_date); // "Month" and "Date" have been updated
+              displayDate(disp_date, 0, adc_month, adc_date); // "Month" and "Date" have been updated
               Graphics_flushBuffer(&g_sContext); 
-              break;   
+              break; 
             }
 
             case 2: { // HOUR
-              adc_hour = (volatile unsigned int)(slider / 171);    
+              adc_hour = (unsigned int)(slider / 171); // 24 hours
               Graphics_clearDisplay(&g_sContext);
-              displayTime(time, 0, adc_hour, adc_min, adc_sec); // "Min" and "Sec" have not been updated --> use the previous values stored.
+              displayTime(disp_time, 0, adc_hour, adc_min, adc_sec); // "Min" and "Sec" have not been updated --> use the previous values stored.
               Graphics_flushBuffer(&g_sContext); 
               break;
             }
 
             case 3: { // MIN
-              adc_min = (volatile unsigned int)(slider / 69);
+              adc_min = (unsigned int)(slider / 69); // 60 mins
               Graphics_clearDisplay(&g_sContext);
-              displayTime(time, 0, adc_hour, adc_min, adc_sec); // "Hour" has been updated. "Sec" has not been updated
+              displayTime(disp_time, 0, adc_hour, adc_min, adc_sec); // "Hour" has been updated. "Sec" has not been updated
               Graphics_flushBuffer(&g_sContext); 
               break;
             }
 
             case 4: { // SEC
-              adc_sec = (volatile unsigned int)(slider / 69);
+              adc_sec = (unsigned int)(slider / 69); // 60 secs
               Graphics_clearDisplay(&g_sContext);
-              displayTime(time, 0, adc_hour, adc_min, adc_sec); // Every param has been updated.
+              displayTime(disp_time, 0, adc_hour, adc_min, adc_sec); // Every param has been updated.
               Graphics_flushBuffer(&g_sContext);
               break;    
             }
