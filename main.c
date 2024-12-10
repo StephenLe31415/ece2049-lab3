@@ -89,8 +89,6 @@ void main() {
     switch(mode) {
     case DISPLAY: {
         while(user_input == 0 | user_input == 2) { // Only left button triggers
-          long unsigned int temp_counter = global_counter;
-          while (global_counter < (temp_counter + 3)) {
           // Display stuff
           if (display_toggle == 0 && (global_counter % 3) == 0) {
             switch(display_sequence) {
@@ -99,6 +97,9 @@ void main() {
               displayDate(disp_date, global_counter, adc_month, adc_date);
               Graphics_flushBuffer(&g_sContext);
               display_sequence = 1;
+              user_input = 0;
+              while (user_input == 0)
+                user_input = read_launchpad_button();
               break;
             }
             case 1: {
@@ -106,6 +107,9 @@ void main() {
               displayTime(disp_time, global_counter, adc_hour, adc_min, adc_sec);
               Graphics_flushBuffer(&g_sContext);
               display_sequence = 2;
+              user_input = 0;
+              while (user_input == 0)
+                user_input = read_launchpad_button();
               break;
             }
             case 2: {
@@ -113,6 +117,9 @@ void main() {
               displayTempC(disp_tempC, (sum_tempC / MOVING_AVERAGE_SIZE));
               Graphics_flushBuffer(&g_sContext);
               display_sequence = 3;
+              user_input = 0;
+              while (user_input == 0)
+                user_input = read_launchpad_button();
               break;
             }
             case 3: {
@@ -120,6 +127,9 @@ void main() {
               displayTempF(disp_tempF, (sum_tempF / MOVING_AVERAGE_SIZE));
               Graphics_flushBuffer(&g_sContext);
               display_sequence = 0;
+              user_input = 0;
+              while (user_input == 0)
+                user_input = read_launchpad_button();
               break;
             }
             }
@@ -151,9 +161,6 @@ void main() {
             sum_tempF += temperatureDegF;
             conversion_toggle = 1;
           }
-            user_input = 0;
-            while (user_input == 0)
-              user_input = read_launchpad_button();
         }
         }
         mode = EDIT;
