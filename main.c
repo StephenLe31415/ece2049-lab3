@@ -169,6 +169,7 @@ void main() {
 
       case EDIT: {
         unsigned int num_pressed = 0;
+        user_input = 0;
         while (user_input != 2) { // Only right button triggers
           long unsigned int temp_counter = global_counter;
           while (user_input == 0 && temp_counter == global_counter)
