@@ -40,7 +40,7 @@ void displayDate(char disp_date[7], volatile long unsigned int global_counter, v
   disp_date[5] = day_ones;
   disp_date[6] = '\0';
 
-  Graphics_drawStringCentered(&g_sContext, disp_date, 7, 48, 15, TRANSPARENT_TEXT);
+  Graphics_drawStringCentered(&g_sContext, disp_date, 7, 48, 45, TRANSPARENT_TEXT);
 }
 
 // Display time
@@ -65,7 +65,7 @@ void displayTime(char disp_time[9], volatile long unsigned int global_counter, v
   disp_time[7] = seconds_ones;
   disp_time[8] = '\0';
 
-  Graphics_drawStringCentered(&g_sContext, disp_time, 9, 48, 35, TRANSPARENT_TEXT);
+  Graphics_drawStringCentered(&g_sContext, disp_time, 9, 48, 45, TRANSPARENT_TEXT);
 }
 
 // Display temp in C
@@ -99,7 +99,7 @@ void displayTempF(char disp_tempF[7], volatile float temperatureDegF) {
   disp_tempF[4] = ' ';
   disp_tempF[5] = 'F';
 
-  Graphics_drawStringCentered(&g_sContext, disp_tempF, 6, 48, 55, TRANSPARENT_TEXT);
+  Graphics_drawStringCentered(&g_sContext, disp_tempF, 6, 48, 45, TRANSPARENT_TEXT);
 }
 
 
