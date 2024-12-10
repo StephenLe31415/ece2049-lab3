@@ -19,10 +19,10 @@ void displayDate(char disp_date[7], volatile long unsigned int global_counter, v
   //Stores length of month to be used to decrement days later
   const int month_days[12] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
   // unsigned int month = adc_month;
-  unsigned int date = adc_date + (global_counter / 86400);
+  unsigned int current_date = adc_date + (global_counter / 86400);
 
-  if (date > month_days[adc_month - 1]) {
-    date -= month_days[adc_month - 1];
+  if (current_date > month_days[adc_month - 1]) {
+    current_date -= month_days[adc_month - 1];
     adc_month ++;
     adc_date = 0; // Restart for a new month --> doesn't need adc_date anymore
     if (adc_month > 12) {
