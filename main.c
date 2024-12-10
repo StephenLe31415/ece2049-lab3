@@ -15,6 +15,7 @@ volatile unsigned int adc_sec = 0;
 volatile unsigned int bits30, bits85;
 volatile state mode;
 volatile int display_toggle = 0;
+volatile int conversion_toggle = 0;
 #pragma vector=TIMER2_A0_VECTOR //What does this do? No one knows...
 __interrupt void timer_a2() {
   global_counter++;
@@ -92,28 +93,31 @@ void main() {
 
       case DISPLAY: {
         while(user_input == 0 | user_input == 2) { // Only left button triggers
-          temperatureDegC = (float)((long)in_temp - CALADC12_15V_30C) * degC_per_bit +30.0;
-          temperatureDegF = temperatureDegC * 9.0/5.0 + 32.0; // Temperature in Fahrenheit Tf = (9/5)*Tc + 32
-          index = global_counter % MOVING_AVERAGE_SIZE;
-
-          // Moving-average logic
-          sum_tempC -= val_tempC[index]; // Remove the oldest readings
-          val_tempC[index] = temperatureDegC;
-          sum_tempC += temperatureDegC; // Add the newest readings
-
-          sum_tempF -= val_tempF[index];
-          val_tempF[index] = temperatureDegF;
-          sum_tempF += temperatureDegF;
-
           // Display stuff
           if (display_toggle == 0) {
-          Graphics_clearDisplay(&g_sContext);
-          displayDate(disp_date, global_counter, adc_month, adc_date);
-          displayTime(disp_time, global_counter, adc_hour, adc_min, adc_sec);
-          displayTempC(disp_tempC, (sum_tempC / MOVING_AVERAGE_SIZE));
-          displayTempF(disp_tempF, (sum_tempF / MOVING_AVERAGE_SIZE));
-          Graphics_flushBuffer(&g_sContext);
-          display_toggle = 1;
+            Graphics_clearDisplay(&g_sContext);
+            displayDate(disp_date, global_counter, adc_month, adc_date);
+            displayTime(disp_time, global_counter, adc_hour, adc_min, adc_sec);
+            displayTempC(disp_tempC, (sum_tempC / MOVING_AVERAGE_SIZE));
+            displayTempF(disp_tempF, (sum_tempF / MOVING_AVERAGE_SIZE));
+            Graphics_flushBuffer(&g_sContext);
+            display_toggle = 1;
+          }
+
+          if (conversion_toggle == 0) {
+            temperatureDegC = (float)((long)in_temp - CALADC12_15V_30C) * degC_per_bit +30.0;
+            temperatureDegF = temperatureDegC * 9.0/5.0 + 32.0; // Temperature in Fahrenheit Tf = (9/5)*Tc + 32
+            index = global_counter % MOVING_AVERAGE_SIZE;
+
+            // Moving-average logic
+            sum_tempC -= val_tempC[index]; // Remove the oldest readings
+            val_tempC[index] = temperatureDegC;
+            sum_tempC += temperatureDegC; // Add the newest readings
+
+            sum_tempF -= val_tempF[index];
+            val_tempF[index] = temperatureDegF;
+            sum_tempF += temperatureDegF;
+            conversion_toggle = 1;
           }
         }
 
