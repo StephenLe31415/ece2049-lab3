@@ -14,10 +14,11 @@ volatile unsigned int adc_min = 0;
 volatile unsigned int adc_sec = 0;
 volatile unsigned int bits30, bits85;
 volatile state mode;
-
+volatile int display_toggle = 0;
 #pragma vector=TIMER2_A0_VECTOR //What does this do? No one knows...
 __interrupt void timer_a2() {
   global_counter++;
+  display_toggle = 0;
   // Graphics_clearDisplay(&g_sContext); // Clear the display
   // Graphics_flushBuffer(&g_sContext);
 }
@@ -105,12 +106,15 @@ void main() {
           sum_tempF += temperatureDegF;
 
           // Display stuff
+          if (display_toggle == 0) {
           Graphics_clearDisplay(&g_sContext);
           displayDate(disp_date, global_counter, adc_month, adc_date);
           displayTime(disp_time, global_counter, adc_hour, adc_min, adc_sec);
           displayTempC(disp_tempC, (sum_tempC / MOVING_AVERAGE_SIZE));
           displayTempF(disp_tempF, (sum_tempF / MOVING_AVERAGE_SIZE));
           Graphics_flushBuffer(&g_sContext);
+          display_toggle = 1;
+          }
         }
 
         mode = EDIT;
