@@ -66,6 +66,7 @@ void main() {
   Graphics_clearDisplay(&g_sContext); // Clear the display
   runtimerA2(); // Start the A2 timer
   // Array for display functions.
+  int display_sequence = 0;
   char disp_date[7] = {0};
   char disp_time[9] = {0};
   char disp_tempC[7] = {0};
@@ -88,16 +89,36 @@ void main() {
         while(user_input == 0 | user_input == 2) { // Only left button triggers
           // Display stuff
           if (display_toggle == 0 && (global_counter % 3) == 0) {
-            Graphics_clearDisplay(&g_sContext);
-            displayDate(disp_date, global_counter, adc_month, adc_date);
-            displayTime(disp_time, global_counter, adc_hour, adc_min, adc_sec);
-            displayTempC(disp_tempC, (sum_tempC / MOVING_AVERAGE_SIZE));
-            displayTempF(disp_tempF, (sum_tempF / MOVING_AVERAGE_SIZE));
-            Graphics_flushBuffer(&g_sContext);
+            switch(display_sequence) {
+            case 0: {
+              Graphics_clearDisplay(&g_sContext);
+              displayDate(disp_date, global_counter, adc_month, adc_date);
+              Graphics_flushBuffer(&g_sContext);
+              display_sequence = 1;
+            }
+            case 1: {
+              Graphics_clearDisplay(&g_sContext);
+              displayTime(disp_time, global_counter, adc_hour, adc_min, adc_sec);
+              Graphics_flushBuffer(&g_sContext);
+              display_sequence = 2;
+            }
+            case 2: {
+              Graphics_clearDisplay(&g_sContext);
+              displayTempC(disp_tempC, (sum_tempC / MOVING_AVERAGE_SIZE));
+              Graphics_flushBuffer(&g_sContext);
+              display_sequence = 3;
+            }
+            case 4: {
+              Graphics_clearDisplay(&g_sContext);
+              displayTempF(disp_tempF, (sum_tempF / MOVING_AVERAGE_SIZE));
+              Graphics_flushBuffer(&g_sContext);
+              display_sequence = 0;
+            }
+            }
             display_toggle = 1;
           }
 
-          if (conversion_toggle == 0) {
+            if (conversion_toggle == 0) {
             // ADC Converstion Stuff
             ADC12CTL0 &= ~ADC12SC; // clear the start bit
             ADC12CTL0 |= ADC12SC + ADC12ENC; // Sampling and conversion start
