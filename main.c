@@ -249,14 +249,14 @@ void main() {
             }
 
             case 4: { // MIN
-              if (scroll >= 50 && increment_flag && adc_hour != 59) {
+              if ((scroll >= 50) && increment_flag && (adc_min != 59)) {
                 adc_min ++;
                 Graphics_clearDisplay(&g_sContext);
                 displayTime(disp_time, 0, adc_hour, adc_min, adc_sec); // "Min" and "Sec" have not been updated --> use the previous values stored.
                 Graphics_flushBuffer(&g_sContext);
               }
 
-              if (scroll <= 30 && increment_flag && adc_hour != 0) {
+              if ((scroll <= 30) && increment_flag && (adc_min != 0)) {
                 adc_min --;
                 Graphics_clearDisplay(&g_sContext);
                 displayTime(disp_time, 0, adc_hour, adc_min, adc_sec); // "Min" and "Sec" have not been updated --> use the previous values stored.
@@ -267,14 +267,14 @@ void main() {
             }
 
             case 0: { // SEC
-              if (scroll >= 50 && increment_flag && adc_hour != 59) {
+              if ((scroll >= 50) && increment_flag && (adc_sec != 59)) {
               adc_sec ++;
               Graphics_clearDisplay(&g_sContext);
               displayTime(disp_time, 0, adc_hour, adc_min, adc_sec); // "Min" and "Sec" have not been updated --> use the previous values stored.
               Graphics_flushBuffer(&g_sContext);
               }
 
-              if (scroll <= 30 && increment_flag && adc_hour != 0) {
+              if ((scroll <= 30) && increment_flag && (adc_sec != 0)) {
                 adc_sec --;
                 Graphics_clearDisplay(&g_sContext);
                 displayTime(disp_time, 0, adc_hour, adc_min, adc_sec); // "Min" and "Sec" have not been updated --> use the previous values stored.
