@@ -29,7 +29,7 @@ __interrupt void timer_a2() {
   while (ADC12CTL1 & ADC12BUSY) // Poll busy bit waiting for conversion to complete
     __no_operation();
   in_temp = ADC12MEM0;
-  slider = ADC12MEM0; // Set store the slider value in ADC12MEM1 in slider
+  scroll = ADC12MEM1; // Set store the slider value in ADC12MEM1 in slider
 
   temperatureDegC = (float)((long)in_temp - CALADC12_15V_30C) * degC_per_bit +30.0;
   temperatureDegF = temperatureDegC * 9.0/5.0 + 32.0; // Temperature in Fahrenheit Tf = (9/5)*Tc + 32
@@ -58,16 +58,16 @@ void main() {
   REFCTL0 &= ~REFMSTR; // Reset REFMSTR to hand over control of
   // internal reference voltages to
   // ADC12_A control registers
-  //ADC12CTL0 = ADC12SHT0_9 | ADC12REFON | ADC12ON | ADC12MSC; // Internal ref = 1.5V
-  //ADC12CTL1 = ADC12SHP + ADC12CONSEQ_1; // Enable sample timer and set sequential mode
+  ADC12CTL0 = ADC12SHT0_9 | ADC12REFON | ADC12ON | ADC12MSC; // Internal ref = 1.5V
+  ADC12CTL1 = ADC12SHP + ADC12CONSEQ_1; // Enable sample timer and set sequential mode
   // Using ADC12MEM0 to store reading
-  //ADC12MCTL0 = ADC12SREF_1 + ADC12INCH_10; // ADC i/p ch A10 = temp sense
+  ADC12MCTL0 = ADC12SREF_1 + ADC12INCH_10; // ADC i/p ch A10 = temp sense
   // Slider stored in to MCTL1 5v reference VCC -> VSS
-  //ADC12MCTL1 = ADC12SREF_0 + ADC12INCH_0 + ADC12EOS;
+  ADC12MCTL1 = ADC12SREF_0 + ADC12INCH_0 + ADC12EOS;
   // ACD12SREF_1 = internal ref = 1.5v
-  ADC12CTL0 = ADC12SHT0_9 | ADC12REFON | ADC12ON | ADC12MSC;
-  ADC12CTL1 = ADC12SHP;
-  ADC12MCTL0 = ADC12SREF_1 + ADC12INCH_0;
+  //ADC12CTL0 = ADC12SHT0_9 | ADC12REFON | ADC12ON | ADC12MSC;
+  //ADC12CTL1 = ADC12SHP;
+  //ADC12MCTL0 = ADC12SREF_1 + ADC12INCH_0;
   __delay_cycles(100); // delay to allow Ref to settle
   ADC12CTL0 |= ADC12ENC; // Enable conversion
   // Use calibration data stored in info memory (1-time setup)
@@ -178,7 +178,7 @@ void main() {
           // Traversing logic
           switch (num_pressed) {
             case 1: { //MONTH
-              adc_month = 1 + (unsigned int)((in_temp - 21) / 3);
+              adc_month = 1 + (unsigned int)((scroll - 21) / 3);
               Graphics_clearDisplay(&g_sContext);
               displayDate(disp_date, 0, adc_month, adc_date); // "Date" has not been updated yet.
               Graphics_flushBuffer(&g_sContext);
@@ -187,11 +187,11 @@ void main() {
             // TODO: define the MACROS for these magic numbers: floor((4095 / # of segment) + 1) = magic number
             case 2: { // DATE
               if (adc_month == 2) {
-                adc_date = 1 + (unsigned int)(in_temp / 147); // 28 days
+                adc_date = 1 + (unsigned int)(scroll / 147); // 28 days
               } else if ((adc_month == 4) &&  (adc_month == 6) && (adc_month == 9) && (adc_month == 11)) {
-                adc_date = 1 + (unsigned int)(in_temp / 137); // 30 days
+                adc_date = 1 + (unsigned int)(scroll / 137); // 30 days
               } else {
-                adc_date = 1 + (unsigned int)(in_temp / 133); // 31 days
+                adc_date = 1 + (unsigned int)(scroll / 133); // 31 days
               }
               Graphics_clearDisplay(&g_sContext);
               displayDate(disp_date, 0, adc_month, adc_date); // "Month" and "Date" have been updated
@@ -200,7 +200,7 @@ void main() {
             }
 
             case 3: { // HOUR
-              adc_hour = (unsigned int)(in_temp / 171); // 24 hours
+              adc_hour = (unsigned int)(scroll / 171); // 24 hours
               Graphics_clearDisplay(&g_sContext);
               displayTime(disp_time, 0, adc_hour, adc_min, adc_sec); // "Min" and "Sec" have not been updated --> use the previous values stored.
               Graphics_flushBuffer(&g_sContext);
@@ -208,7 +208,7 @@ void main() {
             }
 
             case 4: { // MIN
-              adc_min = (unsigned int)(in_temp / 69); // 60 mins
+              adc_min = (unsigned int)(scroll / 69); // 60 mins
               Graphics_clearDisplay(&g_sContext);
               displayTime(disp_time, 0, adc_hour, adc_min, adc_sec); // "Hour" has been updated. "Sec" has not been updated
               Graphics_flushBuffer(&g_sContext);
@@ -216,7 +216,7 @@ void main() {
             }
 
             case 0: { // SEC
-              adc_sec = (unsigned int)(in_temp / 69); // 60 secs
+              adc_sec = (unsigned int)(scroll / 69); // 60 secs
               Graphics_clearDisplay(&g_sContext);
               displayTime(disp_time, 0, adc_hour, adc_min, adc_sec); // Every param has been updated.
               Graphics_flushBuffer(&g_sContext);
