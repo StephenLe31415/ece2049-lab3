@@ -30,8 +30,8 @@ void displayDate(char disp_date[7], volatile long unsigned int global_counter, v
     }
   }
 
-  char day_tens = ((date - (date % 10)) / 10) + '0';
-  char day_ones = (date % 10) + '0';
+  char day_tens = ((current_date - (current_date % 10)) / 10) + '0';
+  char day_ones = (current_date % 10) + '0';
   date[0] = month_abbr[adc_month - 1][0];
   date[1] = month_abbr[adc_month - 1][1];
   date[2] = month_abbr[adc_month - 1][2];
@@ -91,7 +91,7 @@ void displayTempF(char tempF[7], volatile float temperatureDegF) {
   char f_tens = ((int_degF / 100) % 10) + '0';
   char f_ones = ((int_degF / 10) % 10) + '0';
   char f_tenths = (int_degF % 10) + '0';
-  
+
   tempF[0] = f_tens;
   tempF[1] = f_ones;
   tempF[2] = '.';
