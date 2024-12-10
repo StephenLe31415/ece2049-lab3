@@ -177,7 +177,7 @@ void main() {
           num_pressed += (user_input % 5); // Wrap around "Month - Date - Hour - Min - Sec" logic
           // Traversing logic
           switch (num_pressed) {
-            case 0: { //MONTH
+            case 1: { //MONTH
               adc_month = 1 + (unsigned int)(slider / ONE_MONTH_IN_ADC);
               Graphics_clearDisplay(&g_sContext);
               displayDate(disp_date, 0, adc_month, adc_date); // "Date" has not been updated yet.
@@ -185,7 +185,7 @@ void main() {
               break;
             }
             // TODO: define the MACROS for these magic numbers: floor((4095 / # of segment) + 1) = magic number
-            case 1: { // DATE
+            case 2: { // DATE
               if (adc_month == 2) {
                 adc_date = 1 + (unsigned int)(slider / 147); // 28 days
               } else if ((adc_month == 4) &&  (adc_month == 6) && (adc_month == 9) && (adc_month == 11)) {
@@ -199,7 +199,7 @@ void main() {
               break;
             }
 
-            case 2: { // HOUR
+            case 3: { // HOUR
               adc_hour = (unsigned int)(slider / 171); // 24 hours
               Graphics_clearDisplay(&g_sContext);
               displayTime(disp_time, 0, adc_hour, adc_min, adc_sec); // "Min" and "Sec" have not been updated --> use the previous values stored.
@@ -207,7 +207,7 @@ void main() {
               break;
             }
 
-            case 3: { // MIN
+            case 4: { // MIN
               adc_min = (unsigned int)(slider / 69); // 60 mins
               Graphics_clearDisplay(&g_sContext);
               displayTime(disp_time, 0, adc_hour, adc_min, adc_sec); // "Hour" has been updated. "Sec" has not been updated
@@ -215,7 +215,7 @@ void main() {
               break;
             }
 
-            case 4: { // SEC
+            case 0: { // SEC
               adc_sec = (unsigned int)(slider / 69); // 60 secs
               Graphics_clearDisplay(&g_sContext);
               displayTime(disp_time, 0, adc_hour, adc_min, adc_sec); // Every param has been updated.
