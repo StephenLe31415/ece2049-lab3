@@ -32,13 +32,13 @@ void displayDate(char disp_date[7], volatile long unsigned int global_counter, v
 
   char day_tens = ((current_date - (current_date % 10)) / 10) + '0';
   char day_ones = (current_date % 10) + '0';
-  date[0] = month_abbr[adc_month - 1][0];
-  date[1] = month_abbr[adc_month - 1][1];
-  date[2] = month_abbr[adc_month - 1][2];
-  date[3] = ' ';
-  date[4] = day_tens;
-  date[5] = day_ones;
-  date[6] = '\0';
+  disp_date[0] = month_abbr[adc_month - 1][0];
+  disp_date[1] = month_abbr[adc_month - 1][1];
+  disp_date[2] = month_abbr[adc_month - 1][2];
+  disp_date[3] = ' ';
+  disp_date[4] = day_tens;
+  disp_date[5] = day_ones;
+  disp_date[6] = '\0';
 
   Graphics_drawStringCentered(&g_sContext, disp_date, 7, 48, 15, TRANSPARENT_TEXT);
 }
