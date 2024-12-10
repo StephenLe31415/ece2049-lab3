@@ -47,7 +47,7 @@ void main() {
   REFCTL0 &= ~REFMSTR; // Reset REFMSTR to hand over control of
   // internal reference voltages to
   // ADC12_A control registers
-  ADC12CTL0 = ADC12SHT0_9 | ADC12REFON | ADC12ON | ADC12MSC; // Internal ref = 1.5V
+  ADC12CTL0 = ADC12SHT0_9 | ADC12REFON | ADC12ON | ADC12MSC | ADC12STARTADD_0; // Internal ref = 1.5V
   ADC12CTL1 = ADC12SHP + ADC12CONSEQ_1; // Enable sample timer and set sequential mode
   // Using ADC12MEM0 to store reading
   ADC12MCTL0 = ADC12SREF_1 + ADC12INCH_10; // ADC i/p ch A10 = temp sense
@@ -89,6 +89,8 @@ void main() {
     switch(mode) {
     case DISPLAY: {
         while(user_input == 0 | user_input == 2) { // Only left button triggers
+          long unsigned int temp_counter = global_counter;
+          while (global_counter < (temp_counter + 3)) {
           // Display stuff
           if (display_toggle == 0 && (global_counter % 3) == 0) {
             switch(display_sequence) {
@@ -149,8 +151,11 @@ void main() {
             sum_tempF += temperatureDegF;
             conversion_toggle = 1;
           }
+            user_input = 0;
+            while (user_input == 0)
+              user_input = read_launchpad_button;
         }
-
+        }
         mode = EDIT;
         break;
       }
