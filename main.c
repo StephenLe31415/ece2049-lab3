@@ -87,7 +87,7 @@ void main() {
     case DISPLAY: {
         while(user_input == 0 | user_input == 2) { // Only left button triggers
           // Display stuff
-          if (display_toggle == 0) {
+          if (display_toggle == 0 && (global_counter % 3) == 0) {
             Graphics_clearDisplay(&g_sContext);
             displayDate(disp_date, global_counter, adc_month, adc_date);
             displayTime(disp_time, global_counter, adc_hour, adc_min, adc_sec);
