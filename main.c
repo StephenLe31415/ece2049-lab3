@@ -59,6 +59,7 @@ void main() {
   /**************************************************************************** */
   
   configDisplay();
+  init_launchpad_button();
   Graphics_clearDisplay(&g_sContext); // Clear the display
   runtimerA2(); // Start the A2 timer
   // Array for display functions.
