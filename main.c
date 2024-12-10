@@ -20,6 +20,7 @@ volatile int conversion_toggle = 0;
 __interrupt void timer_a2() {
   global_counter++;
   display_toggle = 0;
+  conversion_toggle = 0;
   // Graphics_clearDisplay(&g_sContext); // Clear the display
   // Graphics_flushBuffer(&g_sContext);
 }
@@ -113,7 +114,8 @@ void main() {
             // Moving-average logic
             sum_tempC -= val_tempC[index]; // Remove the oldest readings
             val_tempC[index] = temperatureDegC;
-            sum_tempC += temperatureDegC; // Add the newest readings
+            sum_tempC += temperatureDegC;
+            //sum_tempC += temperatureDegC; // Add the newest readings
 
             sum_tempF -= val_tempF[index];
             val_tempF[index] = temperatureDegF;
