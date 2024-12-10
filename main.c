@@ -111,7 +111,7 @@ void main() {
               display_sequence = 3;
               break;
             }
-            case 4: {
+            case 3: {
               Graphics_clearDisplay(&g_sContext);
               displayTempF(disp_tempF, (sum_tempF / MOVING_AVERAGE_SIZE));
               Graphics_flushBuffer(&g_sContext);
