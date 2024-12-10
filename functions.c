@@ -30,8 +30,8 @@ void displayDate(char disp_date[7], volatile long unsigned int global_counter, v
     }
   }
 
-  char day_tens = ((date - (date % 10)) / 10) + '0';
-  char day_ones = (date % 10) + '0';
+  char day_tens = ((current_date - (current_date % 10)) / 10) + '0';
+  char day_ones = (current_date % 10) + '0';
   disp_date[0] = month_abbr[adc_month - 1][0];
   disp_date[1] = month_abbr[adc_month - 1][1];
   disp_date[2] = month_abbr[adc_month - 1][2];
