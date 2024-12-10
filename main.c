@@ -95,24 +95,28 @@ void main() {
               displayDate(disp_date, global_counter, adc_month, adc_date);
               Graphics_flushBuffer(&g_sContext);
               display_sequence = 1;
+              break;
             }
             case 1: {
               Graphics_clearDisplay(&g_sContext);
               displayTime(disp_time, global_counter, adc_hour, adc_min, adc_sec);
               Graphics_flushBuffer(&g_sContext);
               display_sequence = 2;
+              break;
             }
             case 2: {
               Graphics_clearDisplay(&g_sContext);
               displayTempC(disp_tempC, (sum_tempC / MOVING_AVERAGE_SIZE));
               Graphics_flushBuffer(&g_sContext);
               display_sequence = 3;
+              break;
             }
             case 4: {
               Graphics_clearDisplay(&g_sContext);
               displayTempF(disp_tempF, (sum_tempF / MOVING_AVERAGE_SIZE));
               Graphics_flushBuffer(&g_sContext);
               display_sequence = 0;
+              break;
             }
             }
             display_toggle = 1;
