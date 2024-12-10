@@ -86,18 +86,18 @@ void displayTempC(char disp_c[7], volatile float temperatureDegC) {
 }
 
 // Display temp in F
-void displayTempF(char tempF[7], volatile float temperatureDegF) {
+void displayTempF(char disp_tempF[7], volatile float temperatureDegF) {
   unsigned int int_degF = (unsigned int)(temperatureDegF * 10);
   char f_tens = ((int_degF / 100) % 10) + '0';
   char f_ones = ((int_degF / 10) % 10) + '0';
   char f_tenths = (int_degF % 10) + '0';
 
-  tempF[0] = f_tens;
-  tempF[1] = f_ones;
-  tempF[2] = '.';
-  tempF[3] = f_tenths;
-  tempF[4] = ' ';
-  tempF[5] = 'F';
+  disp_tempF[0] = f_tens;
+  disp_tempF[1] = f_ones;
+  disp_tempF[2] = '.';
+  disp_tempF[3] = f_tenths;
+  disp_tempF[4] = ' ';
+  disp_tempF[5] = 'F';
 
   Graphics_drawStringCentered(&g_sContext, disp_tempF, 6, 48, 55, TRANSPARENT_TEXT);
 }
