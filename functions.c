@@ -19,10 +19,10 @@ void displayDate(char disp_date[7], volatile long unsigned int global_counter, v
   //Stores length of month to be used to decrement days later
   const int month_days[12] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
   // unsigned int month = adc_month;
-  unsigned int date = adc_date + (global_counter / 86400);
+  unsigned int current_date = adc_date + (global_counter / 86400);
 
-  if (date > month_days[adc_month - 1]) {
-    date -= month_days[adc_month - 1];
+  if (current_date > month_days[adc_month - 1]) {
+    current_date -= month_days[adc_month - 1];
     adc_month ++;
     adc_date = 0; // Restart for a new month --> doesn't need adc_date anymore
     if (adc_month > 12) {
@@ -40,7 +40,7 @@ void displayDate(char disp_date[7], volatile long unsigned int global_counter, v
   disp_date[5] = day_ones;
   disp_date[6] = '\0';
 
-  Graphics_drawStringCentered(&g_sContext, disp_date, 7, 48, 15, TRANSPARENT_TEXT);
+  Graphics_drawStringCentered(&g_sContext, disp_date, 7, 48, 45, TRANSPARENT_TEXT);
 }
 
 // Display time
@@ -65,7 +65,7 @@ void displayTime(char disp_time[9], volatile long unsigned int global_counter, v
   disp_time[7] = seconds_ones;
   disp_time[8] = '\0';
 
-  Graphics_drawStringCentered(&g_sContext, disp_time, 9, 48, 35, TRANSPARENT_TEXT);
+  Graphics_drawStringCentered(&g_sContext, disp_time, 9, 48, 45, TRANSPARENT_TEXT);
 }
 
 // Display temp in C
@@ -86,20 +86,20 @@ void displayTempC(char disp_c[7], volatile float temperatureDegC) {
 }
 
 // Display temp in F
-void displayTempF(char tempF[7], volatile float temperatureDegF) {
+void displayTempF(char disp_tempF[7], volatile float temperatureDegF) {
   unsigned int int_degF = (unsigned int)(temperatureDegF * 10);
   char f_tens = ((int_degF / 100) % 10) + '0';
   char f_ones = ((int_degF / 10) % 10) + '0';
   char f_tenths = (int_degF % 10) + '0';
-  
-  tempF[0] = f_tens;
-  tempF[1] = f_ones;
-  tempF[2] = '.';
-  tempF[3] = f_tenths;
-  tempF[4] = ' ';
-  tempF[5] = 'F';
 
-  Graphics_drawStringCentered(&g_sContext, disp_tempF, 6, 48, 55, TRANSPARENT_TEXT);
+  disp_tempF[0] = f_tens;
+  disp_tempF[1] = f_ones;
+  disp_tempF[2] = '.';
+  disp_tempF[3] = f_tenths;
+  disp_tempF[4] = ' ';
+  disp_tempF[5] = 'F';
+
+  Graphics_drawStringCentered(&g_sContext, disp_tempF, 6, 48, 45, TRANSPARENT_TEXT);
 }
 
 
