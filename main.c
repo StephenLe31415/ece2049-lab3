@@ -200,12 +200,12 @@ void main() {
                 Graphics_flushBuffer(&g_sContext);
               }
               increment_flag = 0;
+              key_toggle = 1;
               break;
             }
               
             // TODO: define the MACROS for these magic numbers: floor((4095 / # of segment) + 1) = magic number
             case 2: { // DATE
-
               if (scroll >= 50 && increment_flag) {
                 if ((adc_month == 2 && adc_date != 28) || 
                 ((adc_date != 30) && ((adc_month == 4) || (adc_month == 6) || (adc_month == 9) || (adc_month == 11))) ||
@@ -225,6 +225,7 @@ void main() {
                 Graphics_flushBuffer(&g_sContext);
               }
               increment_flag = 0;
+              key_toggle = 1;
               break;
             }
 
@@ -243,6 +244,7 @@ void main() {
                 Graphics_flushBuffer(&g_sContext);
               }
               increment_flag = 0;
+              key_toggle = 1;
               break;
             }
 
@@ -261,6 +263,7 @@ void main() {
                 Graphics_flushBuffer(&g_sContext);
               }
               increment_flag = 0;
+              key_toggle = 1;
               break;
             }
 
@@ -279,9 +282,9 @@ void main() {
                 Graphics_flushBuffer(&g_sContext);
               }
               increment_flag = 0;
+              key_toggle = 1;
               break;
             }
-          key_toggle = 1;
           } // End of switch num_pressed
         } // End of while loop
 
