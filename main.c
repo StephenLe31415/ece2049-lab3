@@ -101,19 +101,21 @@ void main() {
   unsigned int user_input = read_launchpad_button(); // Read the User's Push-buttons
 
   while (1) {
+    long unsigned int temp_counter = 0;
     switch(mode) {
     case DISPLAY: {
-        while(user_input == 0 | user_input == 2) { // Only left button triggers
-          // Display stuff
-          if (display_toggle == 0 && (global_counter % 3) == 0) {
-            long unsigned int temp_counter = global_counter;
-            switch(display_sequence) {
-            case 0: {
-              Graphics_clearDisplay(&g_sContext);
-              displayDate(disp_date, global_counter, adc_month, adc_date);
-              Graphics_flushBuffer(&g_sContext);
-              display_sequence = 1;
-              user_input = 0;
+      while(user_input == 0 | user_input == 2) { // Only left button triggers
+        // Display stuff
+        if (display_toggle == 0 && (global_counter % 3) == 0) {
+          temp_counter = global_counter;
+          switch(display_sequence) {
+          case 0: {
+            Graphics_clearDisplay(&g_sContext);
+            displayDate(disp_date, global_counter, adc_month, adc_date);
+            Graphics_flushBuffer(&g_sContext);
+            display_sequence = 1;
+            user_input = 0;
+            temp_counter = global_counter;
               while (user_input == 0 && temp_counter == global_counter)
                 user_input = read_launchpad_button();
               break;
@@ -124,6 +126,7 @@ void main() {
               Graphics_flushBuffer(&g_sContext);
               display_sequence = 2;
               user_input = 0;
+              temp_counter = global_counter;
               while (user_input == 0 && temp_counter == global_counter)
                 user_input = read_launchpad_button();
               break;
@@ -134,6 +137,7 @@ void main() {
               Graphics_flushBuffer(&g_sContext);
               display_sequence = 3;
               user_input = 0;
+              temp_counter = global_counter;
               while (user_input == 0 && temp_counter == global_counter)
                 user_input = read_launchpad_button();
               break;
@@ -144,6 +148,7 @@ void main() {
               Graphics_flushBuffer(&g_sContext);
               display_sequence = 0;
               user_input = 0;
+              temp_counter = global_counter;
               while (user_input == 0 && temp_counter == global_counter)
                 user_input = read_launchpad_button();
               break;
@@ -164,6 +169,9 @@ void main() {
               val_tempF[index] = temperatureDegF;
               sum_tempF += temperatureDegF;
               conversion_toggle = 1;
+              user_input = 0;
+              while (user_input == 0 && temp_counter == global_counter)
+                user_input = read_launchpad_button();
           }
         }
         mode = EDIT;
@@ -174,10 +182,16 @@ void main() {
         unsigned int num_pressed = 1;
         user_input = 0;
         while (user_input != 2) { // Only right button triggers
+<<<<<<< HEAD
           // long unsigned int temp_counter = global_counter;
           user_input = 0;
           
           if (user_input == 0 && key_toggle) {
+=======
+          temp_counter = global_counter;
+          user_input = 0;
+          while (user_input == 0 && key_toggle && temp_counter == global_counter)
+>>>>>>> 773af3deed6aa2171011ce5c23d25ac435a85b80
             user_input = read_launchpad_button();
             key_toggle = 0;
           }
@@ -192,7 +206,6 @@ void main() {
                 displayDate(disp_date, 0, adc_month, adc_date);
                 Graphics_flushBuffer(&g_sContext);
               }
-      
               if (scroll <=30 && increment_flag && adc_month != 1) {
                 adc_month--;
                 Graphics_clearDisplay(&g_sContext);
@@ -203,9 +216,9 @@ void main() {
               key_toggle = 1;
               break;
             }
-              
             // TODO: define the MACROS for these magic numbers: floor((4095 / # of segment) + 1) = magic number
             case 2: { // DATE
+<<<<<<< HEAD
               if (scroll >= 50 && increment_flag) {
                 if ((adc_month == 2 && adc_date != 28) || 
                 ((adc_date != 30) && ((adc_month == 4) || (adc_month == 6) || (adc_month == 9) || (adc_month == 11))) ||
@@ -216,6 +229,27 @@ void main() {
                   displayDate(disp_date, 0, adc_month, adc_date); // "Month" and "Date" have been updated
                   Graphics_flushBuffer(&g_sContext);    
                 }
+=======
+           /*   if (scroll >= 50 && increment_flag && adc_date != 28 && adc_month!= 2) {
+                adc_date++;
+                Graphics_clearDisplay(&g_sContext);
+                displayDate(disp_date, 0, adc_month, adc_date); // "Month" and "Date" have been updated
+                Graphics_flushBuffer(&g_sContext);
+              }
+
+              if ((scroll >= 50) && (increment_flag) && (adc_date != 30) && (adc_month != 4) &&  (adc_month != 6) && (adc_month != 9) && (adc_month != 11)) {
+                adc_date++;
+                Graphics_clearDisplay(&g_sContext);
+                displayDate(disp_date, 0, adc_month, adc_date); // "Month" and "Date" have been updated
+                Graphics_flushBuffer(&g_sContext);
+              }
+*/
+              if ((scroll >= 50) && (increment_flag) && (adc_date != 31)) {
+                adc_date++;
+                Graphics_clearDisplay(&g_sContext);
+                displayDate(disp_date, 0, adc_month, adc_date); // "Month" and "Date" have been updated
+                Graphics_flushBuffer(&g_sContext);
+>>>>>>> 773af3deed6aa2171011ce5c23d25ac435a85b80
               }
 
               if (scroll <=30 && increment_flag && adc_date != 1) {
