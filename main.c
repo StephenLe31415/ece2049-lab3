@@ -217,7 +217,7 @@ void main() {
                 Graphics_flushBuffer(&g_sContext);
               }
 
-              if ((scroll >= 50) && (increment_flag) && (adc_date != 31)) {
+              if ((scroll >= 50) && (increment_flag) && (adc_date != 31) && (adc_month != 1) && (adc_month != 3) && (adc_month != 5) && (adc_month != 7) && (adc_month != 8) && (adc_month != 10) && (adc_month != 12)) {
                 adc_date++;
                 Graphics_clearDisplay(&g_sContext);
                 displayDate(disp_date, 0, adc_month, adc_date); // "Month" and "Date" have been updated
