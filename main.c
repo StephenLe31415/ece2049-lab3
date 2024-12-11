@@ -177,7 +177,7 @@ void main() {
           // long unsigned int temp_counter = global_counter;
           user_input = 0;
           
-          while (user_input == 0 && key_toggle) {
+          if (user_input == 0 && key_toggle) {
             user_input = read_launchpad_button();
             key_toggle = 0;
           }
