@@ -164,6 +164,9 @@ void main() {
               val_tempF[index] = temperatureDegF;
               sum_tempF += temperatureDegF;
               conversion_toggle = 1;
+              user_input = 0;
+              while (user_input == 0 && temp_counter == global_counter)
+                user_input = read_launchpad_button();
           }
         }
         mode = EDIT;
