@@ -18,14 +18,14 @@ volatile state mode;
 volatile int display_toggle = 0;
 volatile int conversion_toggle = 0;
 volatile int increment_flag = 0;
-volatile int key_toggle = 0;
+volatile int key_toggle = 1;
 #pragma vector=TIMER2_A0_VECTOR //What does this do? No one knows...
 __interrupt void timer_a2() {
   global_counter++;
   display_toggle = 0;
   conversion_toggle = 0;
   increment_flag = 1;
-  key_toggle = 1;
+  //key_toggle = 1;
   // ADC Converstion Stuff
   ADC12CTL0 &= ~ADC12SC; // clear the start bit
   ADC12CTL0 |= ADC12SC + ADC12ENC; // Sampling and conversion start
@@ -171,16 +171,17 @@ void main() {
       }
 
       case EDIT: {
-        unsigned int num_pressed = 0;
+        unsigned int num_pressed = 1;
         user_input = 0;
         while (user_input != 2) { // Only right button triggers
-          long unsigned int temp_counter = global_counter;
-          // user_input = 0;
+          // long unsigned int temp_counter = global_counter;
+          user_input = 0;
           
-          // while (user_input == 0 && key_toggle && temp_counter == global_counter)
-          //   user_input = read_launchpad_button();
-          //   key_toggle = 0;
-          user_input = read_launchpad_button();
+          while (user_input == 0 && key_toggle) {
+            user_input = read_launchpad_button();
+            key_toggle = 0;
+          }
+          // user_input = read_launchpad_button();
           num_pressed = (num_pressed + user_input) % 5; // Wrap around "Month - Date - Hour - Min - Sec" logic
           // Traversing logic
           switch (num_pressed) {
@@ -265,10 +266,10 @@ void main() {
 
             case 0: { // SEC
               if ((scroll >= 50) && increment_flag && (adc_sec != 59)) {
-              adc_sec ++;
-              Graphics_clearDisplay(&g_sContext);
-              displayTime(disp_time, 0, adc_hour, adc_min, adc_sec); // "Min" and "Sec" have not been updated --> use the previous values stored.
-              Graphics_flushBuffer(&g_sContext);
+                adc_sec ++;
+                Graphics_clearDisplay(&g_sContext);
+                displayTime(disp_time, 0, adc_hour, adc_min, adc_sec); // "Min" and "Sec" have not been updated --> use the previous values stored.
+                Graphics_flushBuffer(&g_sContext);
               }
 
               if ((scroll <= 30) && increment_flag && (adc_sec != 0)) {
@@ -280,6 +281,7 @@ void main() {
               increment_flag = 0;
               break;
             }
+          key_toggle = 1;
           } // End of switch num_pressed
         } // End of while loop
 
