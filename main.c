@@ -205,9 +205,9 @@ void main() {
             case 2: { // DATE
 
               if (scroll >= 50 && increment_flag) {
-                if ((adc_month == 2 && adc_date != 28) | 
-                ((adc_date != 30) && (adc_month == 4) &&  (adc_month == 6) && (adc_month == 9) && (adc_month == 11)) |
-                ((adc_date != 31) && (adc_month == 1) && (adc_month == 3) && (adc_month == 5) && (adc_month == 7) && (adc_month == 8) && (adc_month == 10) && (adc_month == 12))
+                if ((adc_month == 2 && adc_date != 28) || 
+                ((adc_date != 30) && ((adc_month == 4) || (adc_month == 6) || (adc_month == 9) || (adc_month == 11))) ||
+                ((adc_date != 31) && ((adc_month == 1) || (adc_month == 3) || (adc_month == 5) || (adc_month == 7) || (adc_month == 8) || (adc_month == 10) || (adc_month == 12)))
                 ) {
                   adc_date++;
                   Graphics_clearDisplay(&g_sContext);
@@ -215,7 +215,7 @@ void main() {
                   Graphics_flushBuffer(&g_sContext);    
                 }
               }
-              
+
               if (scroll <=30 && increment_flag && adc_date != 1) {
                 adc_date--;
                 Graphics_clearDisplay(&g_sContext);
