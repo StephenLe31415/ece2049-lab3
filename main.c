@@ -101,12 +101,13 @@ void main() {
   unsigned int user_input = read_launchpad_button(); // Read the User's Push-buttons
 
   while (1) {
+    long unsigned int temp_counter = 0;
     switch(mode) {
     case DISPLAY: {
         while(user_input == 0 | user_input == 2) { // Only left button triggers
           // Display stuff
           if (display_toggle == 0 && (global_counter % 3) == 0) {
-            long unsigned int temp_counter = global_counter;
+            temp_counter = global_counter;
             switch(display_sequence) {
             case 0: {
               Graphics_clearDisplay(&g_sContext);
@@ -175,7 +176,6 @@ void main() {
 
       case EDIT: {
         unsigned int num_pressed = 0;
-        long unsigned int temp_counter = 0;
         user_input = 0;
         while (user_input != 2) { // Only right button triggers
           temp_counter = global_counter;
