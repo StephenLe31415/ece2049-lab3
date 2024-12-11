@@ -172,11 +172,11 @@ void main() {
 
       case EDIT: {
         unsigned int num_pressed = 0;
+        long unsigned int temp_counter = 0;
         user_input = 0;
         while (user_input != 2) { // Only right button triggers
-          long unsigned int temp_counter = global_counter;
+          temp_counter = global_counter;
           user_input = 0;
-          
           while (user_input == 0 && key_toggle && temp_counter == global_counter)
             user_input = read_launchpad_button();
             key_toggle = 0;
@@ -190,7 +190,6 @@ void main() {
                 displayDate(disp_date, 0, adc_month, adc_date);
                 Graphics_flushBuffer(&g_sContext);
               }
-      
               if (scroll <=30 && increment_flag && adc_month != 1) {
                 adc_month--;
                 Graphics_clearDisplay(&g_sContext);
@@ -200,14 +199,13 @@ void main() {
               increment_flag = 0;
               break;
             }
-              
             // TODO: define the MACROS for these magic numbers: floor((4095 / # of segment) + 1) = magic number
             case 2: { // DATE
-              if (scroll >= 50 && increment_flag && adc_date != 28 && adc_month!= 2) {
+           /*   if (scroll >= 50 && increment_flag && adc_date != 28 && adc_month!= 2) {
                 adc_date++;
                 Graphics_clearDisplay(&g_sContext);
                 displayDate(disp_date, 0, adc_month, adc_date); // "Month" and "Date" have been updated
-                Graphics_flushBuffer(&g_sContext);                
+                Graphics_flushBuffer(&g_sContext);
               }
 
               if ((scroll >= 50) && (increment_flag) && (adc_date != 30) && (adc_month != 4) &&  (adc_month != 6) && (adc_month != 9) && (adc_month != 11)) {
@@ -216,7 +214,7 @@ void main() {
                 displayDate(disp_date, 0, adc_month, adc_date); // "Month" and "Date" have been updated
                 Graphics_flushBuffer(&g_sContext);
               }
-
+*/
               if ((scroll >= 50) && (increment_flag) && (adc_date != 31)) {
                 adc_date++;
                 Graphics_clearDisplay(&g_sContext);
